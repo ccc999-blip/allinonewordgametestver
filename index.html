@@ -275,7 +275,28 @@
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('pro_v_db_v3')) || {};
+    // --- 1. 初始辭庫自動植入邏輯 ---
+    const STORAGE_KEY = 'pro_v_db_v3';
+    let savedData = localStorage.getItem(STORAGE_KEY);
+    let db = {};
+
+    if (!savedData || savedData === '{}') {
+        // 這是給新使用者的第一個驚喜題庫
+        db = {
+            "系統預設題庫(測試與體驗功能用，無需使用可刪除)": [
+                { w: "Success", m: "成功", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } },
+                { w: "Challenge", m: "挑戰", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } },
+                { w: "Practice", m: "練習", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } },
+                { w: "Memory", m: "記憶", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } },
+                { w: "Growth", m: "成長", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } }
+            ]
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    } else {
+        db = JSON.parse(savedData);
+    }
+    // --- 初始邏輯結束，接續原本變數 ---
+
     let currentDB = "";
     let currentGameMode = ""; 
     let quizQueue = [];
@@ -284,12 +305,6 @@
     let correctCount = 0;
     let wrongList = [];
     let isSelecting = false;
-
-    function formatItemToString(item) {
-        let s = item.stats || { choice: {t:0, c:0}, input: {t:0, c:0} };
-        return `${item.w} ${item.m} [${s.choice.t},${s.choice.c}] {${s.input.t},${s.input.c}}`;
-    }
-
     function parseStringToItem(line) {
         const regex = /^\s*(\S+)\s+(.+?)(?:\s*\[(\d+),(\d+)\])?(?:\s*\{(\d+),(\d+)\})?\s*$/;
         let match = line.match(regex);
