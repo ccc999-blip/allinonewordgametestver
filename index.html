@@ -82,7 +82,6 @@
         .stat-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 18px; font-weight: bold; }
         .wrong-list-area { background: #fff; border: 2px solid var(--danger); padding: 10px; border-radius: 8px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 16px; white-space: pre-wrap; }
         
-        /* 新增：說明書內的內容排版 */
         .help-content { line-height: 1.6; font-size: 16px; text-align: left; margin-bottom: 20px; }
     </style>
 </head>
@@ -150,7 +149,6 @@
                 <p></b>如您所見，這是一個由我與 AI 協作開發的網頁小遊戲。在所有功能中，我最推薦**「智慧批次匯入」**：只要您的文字格式維持「每行一個英文與對應中文」，系統即可自動解析並建檔。這意味著您可以將整頁單字交由 AI 快速整理後直接匯入，徹底告別手動逐字輸入的低效。
 軟體仍持續進化中，若您在使用過程中遇到任何異常，或有新的功能提案與優化建議，誠摯歡迎透過電子郵件與我聯繫：starsword0000@gmail.com</p>
             </section>
-
 
         </div>
         <button onclick="go('p-main')" style="background:var(--primary); color:white; border:none; margin-top: 10px;">我了解了，返回主選單</button>
@@ -275,13 +273,10 @@
 </div>
 
 <script>
-    // --- 1. 初始辭庫自動植入邏輯 ---
     const STORAGE_KEY = 'pro_v_db_v3';
-    let savedData = localStorage.getItem(STORAGE_KEY);
-    let db = {};
+    let db = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 
-    if (!savedData || savedData === '{}') {
-        // 這是給新使用者的第一個驚喜題庫
+    if (Object.keys(db).length === 0) {
         db = {
             "系統預設題庫(測試與體驗功能用，無需使用可刪除)": [
                 { w: "Success", m: "成功", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } },
@@ -290,12 +285,9 @@
                 { w: "Memory", m: "記憶", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } },
                 { w: "Growth", m: "成長", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } }
             ]
-        };
+};
         localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-    } else {
-        db = JSON.parse(savedData);
     }
-    // --- 初始邏輯結束，接續原本變數 ---
 
     let currentDB = "";
     let currentGameMode = ""; 
@@ -305,6 +297,16 @@
     let correctCount = 0;
     let wrongList = [];
     let isSelecting = false;
+
+    // --- 新增：匯出格式化函式 (之前少這段) ---
+    function formatItemToString(item) {
+        let s = `${item.w} ${item.m}`;
+        if(item.stats) {
+            s += ` [${item.stats.choice.t},${item.stats.choice.c}] {${item.stats.input.t},${item.stats.input.c}}`;
+        }
+        return s;
+    }
+
     function parseStringToItem(line) {
         const regex = /^\s*(\S+)\s+(.+?)(?:\s*\[(\d+),(\d+)\])?(?:\s*\{(\d+),(\d+)\})?\s*$/;
         let match = line.match(regex);
@@ -319,9 +321,7 @@
             };
         }
         let p = line.trim().split(/\s+/);
-        if(p.length >= 2) {
-            return { w: p[0], m: p.slice(1).join(" "), stats: { choice: {t:0, c:0}, input: {t:0, c:0} } };
-        }
+        if(p.length >= 2) return { w: p[0], m: p.slice(1).join(" "), stats: { choice: {t:0, c:0}, input: {t:0, c:0} } };
         return null;
     }
 
@@ -364,7 +364,7 @@
         go('p-sel');
     }
 
-    function saveDB() { localStorage.setItem('pro_v_db_v3', JSON.stringify(db)); }
+    function saveDB() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
 
     function addDB() {
         let name = document.getElementById('db-in').value.trim();
@@ -420,7 +420,7 @@
     }
 
     function drawWordList() {
-        let list = db[currentDB];
+        let list = db[currentDB] || [];
         list.sort((a, b) => getCombinedRate(a) - getCombinedRate(b));
         let html = '';
         list.forEach((item, i) => {
@@ -473,9 +473,11 @@
         isSelecting = false;
         document.getElementById('select-control-bar').style.display = 'none';
         document.getElementById('edit-exit-btn').style.display = 'block';
+        
         const input = document.getElementById('batch-input');
         const submit = document.getElementById('batch-submit-btn');
         const copyBtn = document.getElementById('batch-copy-btn');
+        
         document.getElementById('batch-title').innerText = `📤 匯出選取的單字 (${selectedData.length} 個)`;
         input.value = selectedData.map(i => formatItemToString(i)).join('\n');
         input.readOnly = true; 
@@ -518,7 +520,7 @@
     }
 
     function copyBatchContent() {
-        navigator.clipboard.writeText(document.getElementById('batch-input').value).then(() => alert("已複製！"));
+        navigator.clipboard.writeText(document.getElementById('batch-input').value).then(() => alert("已複製到剪貼簿！"));
     }
 
     function triggerEditWord(i) {
@@ -533,7 +535,7 @@
     function exportJSON() {
         const blob = new Blob([JSON.stringify(db, null, 2)], {type: "application/json"});
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-        a.download = `單字庫備份_${new Date().toLocaleDateString()}.json`; a.click();
+        a.download = `備份_${new Date().toLocaleDateString()}.json`; a.click();
     }
 
     function importJSON(e) {
@@ -543,25 +545,16 @@
         reader.onload = (ev) => {
             try {
                 let data = JSON.parse(ev.target.result);
-                let report = "";
                 for(let key in data) {
-                    if(!db[key]) {
-                        db[key] = data[key];
-                        report += `新增題庫「${key}」\n`;
-                    } else {
-                        let added = 0, skipped = 0;
+                    if(!db[key]) db[key] = data[key];
+                    else {
                         data[key].forEach(nw => {
-                            if(!isDuplicate(nw.w, nw.m, key)) {
-                                nw.stats = nw.stats || { choice: {t:0, c:0}, input: {t:0, c:0} };
-                                db[key].push(nw);
-                                added++;
-                            } else { skipped++; }
+                            if(!isDuplicate(nw.w, nw.m, key)) db[key].push(nw);
                         });
-                        report += `更新「${key}」：新增 ${added}，重複 ${skipped}\n`;
                     }
                 }
-                saveDB(); drawDBList(); alert("匯入成功！\n" + report);
-            } catch(err) { alert("檔案格式錯誤"); }
+                saveDB(); drawDBList(); alert("匯入成功！");
+            } catch(err) { alert("格式錯誤"); }
         };
         reader.readAsText(file); e.target.value = ""; 
     }
