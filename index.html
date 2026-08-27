@@ -46,15 +46,6 @@
             border: 2px solid var(--danger); display: none; pointer-events: none; z-index: 10;
         }
 
-        /* 遮蓋揭曉圓圈按鈕 (位於計時器下方) */
-        #reveal-circle-btn {
-            position: absolute; top: 88px; right: 25px; width: 44px; height: 44px;
-            border-radius: 50%; background: var(--primary); color: white;
-            font-size: 20px; font-weight: bold; border: 2px solid var(--border);
-            display: none; align-items: center; justify-content: center; cursor: pointer;
-            z-index: 15; box-shadow: 0 4px 10px rgba(0,0,0,0.15); padding: 0; margin-bottom: 0;
-        }
-
         /* 選項遮蓋層 */
         .options-wrapper {
             position: relative;
@@ -64,6 +55,7 @@
             background: rgba(230, 235, 240, 0.95); backdrop-filter: blur(4px);
             border-radius: 12px; display: none; align-items: center; justify-content: center;
             font-size: 18px; font-weight: 900; color: #555; z-index: 5; border: 2px dashed #999;
+            cursor: pointer; user-select: none;
         }
 
         .quiz-word-container {
@@ -108,7 +100,6 @@
 
 <div class="container">
     <div id="timer-display">0</div>
-    <button id="reveal-circle-btn" onclick="revealOptions()" title="點擊顯示選項">👁️</button>
 
     <div id="p-main" class="page active">
         <h2 style="font-size: 28px;">😈 all in one</h2>
@@ -214,7 +205,7 @@
         </div>
         <div id="ui-choice" style="display:none;">
             <div class="options-wrapper">
-                <div id="q-options-mask" class="options-mask">🔒 選項已遮蓋，請點擊右上角圓圈</div>
+                <div id="q-options-mask" class="options-mask" onclick="revealOptions()">🔒 選項已遮蓋，點擊此處揭曉</div>
                 <div id="q-options-container"></div>
             </div>
             <div id="choice-next-box" style="display:none; margin-top: 10px;">
@@ -419,7 +410,6 @@
         document.getElementById(pageId).classList.add('active');
         if(quizTimer) clearInterval(quizTimer);
         document.getElementById('timer-display').style.display = 'none';
-        document.getElementById('reveal-circle-btn').style.display = 'none';
         if(pageId === 'p-mgr') drawDBList();
         if(pageId === 'p-sel') drawSelList();
         if(pageId !== 'p-edit') cancelSelection();
@@ -698,19 +688,15 @@
         document.getElementById('q-options-container').innerHTML = html;
 
         const maskEl = document.getElementById('q-options-mask');
-        const circleBtn = document.getElementById('reveal-circle-btn');
         if (isMaskActive) {
             maskEl.style.display = 'flex';
-            circleBtn.style.display = 'flex';
         } else {
             maskEl.style.display = 'none';
-            circleBtn.style.display = 'none';
         }
     }
 
     function revealOptions() {
         document.getElementById('q-options-mask').style.display = 'none';
-        document.getElementById('reveal-circle-btn').style.display = 'none';
     }
 
     function checkChoiceAns(btn, sel, cor) {
@@ -727,7 +713,6 @@
     function setupInputUI(q) {
         document.getElementById('wrong-confirm-box').style.display = 'none';
         document.getElementById('input-zone').style.display = 'block';
-        document.getElementById('reveal-circle-btn').style.display = 'none';
         const hintEl = document.getElementById('q-hint-display');
         if(document.getElementById('hint-toggle').checked) {
             let w = q.w.trim();
@@ -753,7 +738,6 @@
         updateStat(q, false); wrongList.push(q);
         if(currentGameMode === 'choice') {
             document.getElementById('q-options-mask').style.display = 'none';
-            document.getElementById('reveal-circle-btn').style.display = 'none';
             document.querySelectorAll('.option-btn').forEach(b => {
                 if(b.innerText === q.m) b.classList.add('correct');
                 b.disabled = true;
@@ -780,7 +764,6 @@
     }
 
     function showResult() {
-        document.getElementById('reveal-circle-btn').style.display = 'none';
         document.getElementById('res-total').innerText = quizQueue.length;
         document.getElementById('res-correct').innerText = correctCount;
         document.getElementById('res-rate').innerText = Math.round((correctCount / quizQueue.length) * 100) + "%";
