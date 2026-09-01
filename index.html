@@ -706,7 +706,7 @@
         if(sel === cor) {
             btn.classList.add('correct'); updateStat(q, true);
             confetti({ particleCount: 40, spread: 50 }); correctCount++;
-            setTimeout(nextQ, 800);
+            setTimeout(nextQ, 120);
         } else { btn.classList.add('wrong'); handleWrong(q); }
     }
 
