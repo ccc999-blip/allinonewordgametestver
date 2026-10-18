@@ -3,97 +3,524 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎮單字測驗小遊戲</title>
+    <title>單字測驗小遊戲</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@700;800;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --text-dark: #1a1a1a;
-            --primary: #0056b3;
-            --success: #1e7e34;
-            --danger: #bd2130;
-            --warning: #f39c12;
-            --border: #333333;
-            --edit-bg: #fff9c4;
-            --batch-bg: #e3f2fd;
+            --bg-cream: #F7F4EC;
+            --card-bg: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+            
+            --primary: #1E3A8A;
+            --primary-shadow: #172554;
+            --primary-light: #EFF6FF;
+            
+            --warning: #F59E0B;
+            --warning-shadow: #D97706;
+            --warning-light: #FEF3C7;
+            
+            --success: #10B981;
+            --success-shadow: #059669;
+            --success-light: #ECFDF5;
+            
+            --danger: #EF4444;
+            --danger-shadow: #B91C1C;
+            --danger-light: #FEF2F2;
+            
+            --opt-bg: #F8FAFC;
+            --opt-border: #E2E8F0;
+            --opt-shadow: #CBD5E1;
+            
+            --edit-bg: #FEF9C3;
+            --batch-bg: #F1F5F9;
         }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 15px; color: var(--text-dark); }
-        .container { width: 100%; max-width: 500px; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); margin: auto; position: relative; }
+        
+        body { 
+            font-family: 'Nunito', 'Noto Sans TC', system-ui, -apple-system, sans-serif; 
+            background: var(--bg-cream); 
+            margin: 0; 
+            padding: 20px 15px; 
+            color: var(--text-dark); 
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .container { 
+            width: 100%; 
+            max-width: 500px; 
+            background: var(--card-bg); 
+            padding: 28px 24px; 
+            border-radius: 24px; 
+            box-shadow: 0 12px 32px rgba(30, 41, 59, 0.08); 
+            margin: auto; 
+            position: relative; 
+            border: 2px solid #EAE5D9;
+        }
         
         .page { display: none; }
-        .page.active { display: block; }
+        .page.active { display: block; animation: fadeIn 0.2s ease-out; }
 
-        h2 { border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-top: 0; color: var(--text-dark); text-align: center; }
-        p, label { font-weight: 800; color: #000; display: block; margin-bottom: 8px; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
+        h2 { 
+            font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
+            border-bottom: 3px solid var(--opt-border); 
+            padding-bottom: 14px; 
+            margin-top: 0; 
+            margin-bottom: 20px;
+            color: var(--text-dark); 
+            text-align: center; 
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .brand-header {
+            font-family: 'Fredoka', 'Nunito', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--primary);
+            border-bottom: 3px solid var(--opt-border);
+            padding-bottom: 18px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        p, label { 
+            font-weight: 800; 
+            color: var(--text-dark); 
+            display: block; 
+            margin-bottom: 8px; 
+        }
+
+        /* 3D 實體按鈕系統 */
         button { 
-            width: 100%; padding: 16px; margin-bottom: 12px; border: 2px solid var(--border); 
-            border-radius: 12px; font-size: 18px; font-weight: 800; cursor: pointer;
-            background: #fff; color: var(--text-dark);
+            width: 100%; 
+            padding: 16px 20px; 
+            margin-bottom: 14px; 
+            border: 2px solid var(--opt-border); 
+            border-radius: 16px; 
+            font-family: inherit;
+            font-size: 18px; 
+            font-weight: 800; 
+            cursor: pointer;
+            background: var(--opt-bg); 
+            color: var(--text-dark);
+            box-shadow: 0 4px 0 var(--opt-shadow);
+            transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            line-height: 1.2;
         }
-        
-        .option-btn.correct { background: var(--success) !important; color: white !important; }
-        .option-btn.wrong { background: var(--danger) !important; color: white !important; }
 
+        button:hover {
+            filter: brightness(0.99);
+        }
+
+        button:active:not(:disabled) { 
+            transform: translateY(3px); 
+            box-shadow: 0 1px 0 var(--opt-shadow); 
+        }
+
+        button:disabled {
+            cursor: default;
+            opacity: 0.95;
+        }
+
+        /* 語意化 3D 按鈕變體 */
+        .btn-primary {
+            background: var(--primary) !important;
+            color: #FFFFFF !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 4px 0 var(--primary-shadow) !important;
+        }
+        .btn-primary:active:not(:disabled) {
+            box-shadow: 0 1px 0 var(--primary-shadow) !important;
+        }
+
+        .btn-warning {
+            background: var(--warning) !important;
+            color: #FFFFFF !important;
+            border-color: var(--warning) !important;
+            box-shadow: 0 4px 0 var(--warning-shadow) !important;
+        }
+        .btn-warning:active:not(:disabled) {
+            box-shadow: 0 1px 0 var(--warning-shadow) !important;
+        }
+
+        .btn-success {
+            background: var(--success) !important;
+            color: #FFFFFF !important;
+            border-color: var(--success) !important;
+            box-shadow: 0 4px 0 var(--success-shadow) !important;
+        }
+        .btn-success:active:not(:disabled) {
+            box-shadow: 0 1px 0 var(--success-shadow) !important;
+        }
+
+        .btn-danger {
+            background: var(--danger) !important;
+            color: #FFFFFF !important;
+            border-color: var(--danger) !important;
+            box-shadow: 0 4px 0 var(--danger-shadow) !important;
+        }
+        .btn-danger:active:not(:disabled) {
+            box-shadow: 0 1px 0 var(--danger-shadow) !important;
+        }
+
+        .btn-dark {
+            background: var(--text-dark) !important;
+            color: #FFFFFF !important;
+            border-color: var(--text-dark) !important;
+            box-shadow: 0 4px 0 #0F172A !important;
+        }
+        .btn-dark:active:not(:disabled) {
+            box-shadow: 0 1px 0 #0F172A !important;
+        }
+
+        .btn-outline-primary {
+            background: #FFFFFF !important;
+            color: var(--primary) !important;
+            border: 2px solid var(--primary) !important;
+            box-shadow: 0 4px 0 var(--primary-shadow) !important;
+        }
+        .btn-outline-primary:active:not(:disabled) {
+            box-shadow: 0 1px 0 var(--primary-shadow) !important;
+        }
+
+        .btn-outline-success {
+            background: #FFFFFF !important;
+            color: var(--success) !important;
+            border: 2px solid var(--success) !important;
+            box-shadow: 0 4px 0 var(--success-shadow) !important;
+        }
+        .btn-outline-success:active:not(:disabled) {
+            box-shadow: 0 1px 0 var(--success-shadow) !important;
+        }
+
+        .btn-ghost {
+            background: transparent !important;
+            border: 2px solid transparent !important;
+            box-shadow: none !important;
+            color: var(--text-muted) !important;
+        }
+        .btn-ghost:active:not(:disabled) {
+            transform: translateY(1px);
+            background: var(--opt-bg) !important;
+        }
+
+        /* 測驗選項與題庫選擇按鈕 */
+        .option-btn {
+            background: var(--opt-bg);
+            border: 2px solid var(--opt-border);
+            box-shadow: 0 4px 0 var(--opt-shadow);
+            color: var(--text-dark);
+            padding: 18px 16px;
+        }
+        .option-btn.correct { 
+            background: var(--success) !important; 
+            color: white !important; 
+            border-color: var(--success) !important;
+            box-shadow: 0 4px 0 var(--success-shadow) !important;
+        }
+        .option-btn.wrong { 
+            background: var(--danger) !important; 
+            color: white !important; 
+            border-color: var(--danger) !important;
+            box-shadow: 0 4px 0 var(--danger-shadow) !important;
+        }
+
+        /* 題庫選擇高亮狀態 */
+        .db-sel-btn {
+            justify-content: flex-start;
+            text-align: left;
+            padding: 16px 20px;
+        }
+        .db-sel-btn.selected-db {
+            background: var(--primary-light) !important;
+            border: 2px solid var(--primary) !important;
+            box-shadow: 0 4px 0 var(--primary-shadow) !important;
+            color: var(--primary) !important;
+        }
+
+        /* 輸入框樣式 */
         input, textarea { 
-            width: 100%; padding: 14px; margin-bottom: 15px; border: 3px solid var(--border); 
-            border-radius: 8px; font-size: 18px; font-weight: bold; background: white; color: black;
+            width: 100%; 
+            padding: 14px 16px; 
+            margin-bottom: 16px; 
+            border: 2px solid var(--opt-border); 
+            border-radius: 16px; 
+            font-family: inherit;
+            font-size: 18px; 
+            font-weight: 700; 
+            background: var(--opt-bg); 
+            color: var(--text-dark);
+            box-shadow: inset 0 2px 4px rgba(30, 41, 59, 0.03);
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #FFFFFF;
         }
 
+        /* 計時器 */
         #timer-display {
-            position: absolute; top: 40px; right: 25px; font-size: 24px; font-weight: 900;
-            color: var(--danger); background: #fff; padding: 5px 10px; border-radius: 8px;
-            border: 2px solid var(--danger); display: none; pointer-events: none; z-index: 10;
+            position: absolute; 
+            top: 28px; 
+            right: 24px; 
+            font-size: 22px; 
+            font-weight: 900;
+            color: var(--danger); 
+            background: var(--danger-light); 
+            padding: 6px 14px; 
+            border-radius: 14px;
+            border: 2px solid var(--danger); 
+            box-shadow: 0 3px 0 var(--danger-shadow);
+            display: none; 
+            pointer-events: none; 
+            z-index: 10;
         }
 
-        /* 選項遮蓋層 */
-        .options-wrapper {
+        /* 題目展示區 */
+        .quiz-word-container {
+            width: 100%; 
+            margin: 20px 0 24px 0; 
+            min-height: 110px; 
+            padding: 20px 16px;
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            background: var(--opt-bg); 
+            border: 2px solid var(--opt-border);
+            border-radius: 20px;
+            box-shadow: inset 0 2px 6px rgba(30, 41, 59, 0.03);
+        }
+        .quiz-word { 
+            font-size: 40px; 
+            color: var(--primary); 
+            font-weight: 900; 
+            word-break: break-all; 
+            line-height: 1.2;
+        }
+        .scaffold-text { 
+            font-size: 24px; 
+            color: var(--warning); 
+            letter-spacing: 4px; 
+            font-weight: 900; 
+            margin-top: 8px; 
+        }
+
+        /* 進度條 (Duolingo 風格圓潤高光) */
+        .progress-bar { 
+            width: 100%; 
+            height: 16px; 
+            background: var(--opt-border); 
+            border-radius: 99px; 
+            margin-bottom: 20px; 
+            overflow: hidden; 
+            padding: 3px;
+        }
+        #progress-fill { 
+            height: 100%; 
+            background: var(--success); 
+            width: 0%; 
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-radius: 99px;
             position: relative;
         }
-        .options-mask {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(230, 235, 240, 0.95); backdrop-filter: blur(4px);
-            border-radius: 12px; display: none; align-items: center; justify-content: center;
-            font-size: 18px; font-weight: 900; color: #555; z-index: 5; border: 2px dashed #999;
-            cursor: pointer; user-select: none;
+        #progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 6px;
+            right: 6px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 99px;
         }
 
-        .quiz-word-container {
-            width: 100%; margin: 20px 0; min-height: 80px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; text-align: center; background: #f8f9fa; border-radius: 10px;
+        /* 列表項目與卡片 */
+        .item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 12px 10px; 
+            border-bottom: 2px solid var(--opt-border); 
+            gap: 10px; 
         }
-        .quiz-word { font-size: 42px; color: var(--primary); font-weight: 900; word-break: break-all; }
-        .scaffold-text { font-size: 26px; color: var(--warning); letter-spacing: 4px; font-weight: bold; margin-top: 5px; }
-
-        .progress-bar { width: 100%; height: 12px; background: #ddd; border-radius: 6px; margin-bottom: 20px; overflow: hidden; border: 1px solid #999; }
-        #progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
-
-        .item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 2px solid #ccc; gap: 8px; }
-        .word-clickable { flex: 1; cursor: pointer; padding: 8px; border-radius: 8px; background: #fafafa; border: 1px solid #eee; min-width: 0; }
-        .word-text { font-weight: bold; font-size: 18px; display: block; overflow: hidden; text-overflow: ellipsis; }
+        .item:last-child {
+            border-bottom: none;
+        }
+        .word-clickable { 
+            flex: 1; 
+            cursor: pointer; 
+            padding: 10px 14px; 
+            border-radius: 14px; 
+            background: var(--opt-bg); 
+            border: 2px solid var(--opt-border); 
+            box-shadow: 0 3px 0 var(--opt-shadow);
+            min-width: 0; 
+            transition: transform 0.08s ease, box-shadow 0.08s ease;
+        }
+        .word-clickable:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 var(--opt-shadow);
+            background: var(--edit-bg);
+        }
+        .word-text { 
+            font-weight: 800; 
+            font-size: 18px; 
+            color: var(--text-dark);
+            display: block; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
         
-        .batch-checkbox { width: 25px; height: 25px; margin-right: 10px; cursor: pointer; display: none; flex-shrink: 0; }
-        .selecting { background: #fffde7; }
+        /* 選取模式樣式調整 */
+        .batch-checkbox { 
+            width: 24px; 
+            height: 24px; 
+            margin-right: 6px; 
+            margin-bottom: 0;
+            cursor: pointer; 
+            display: none; 
+            flex-shrink: 0; 
+            accent-color: var(--primary);
+        }
+        .selecting { background: var(--warning-light); border-radius: 14px; }
         .selecting .batch-checkbox { display: block; }
         .selecting .btn-del { display: none; } 
         .selecting .stat-group { display: flex; } 
 
-        .stat-group { display: flex; gap: 4px; flex-shrink: 0; }
-        .stat-box { width: 38px; height: 38px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: white; border: 1px solid rgba(0,0,0,0.1); }
-        .stat-choice { background-color: var(--primary); }
-        .stat-input { background-color: var(--success); }
+        .stat-group { display: flex; gap: 6px; flex-shrink: 0; }
+        .stat-box { 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 11px; 
+            font-weight: 900; 
+            color: white; 
+        }
+        .stat-choice { background-color: var(--primary); box-shadow: 0 3px 0 var(--primary-shadow); }
+        .stat-input { background-color: var(--success); box-shadow: 0 3px 0 var(--success-shadow); }
         
-        .legend { font-size: 12px; background: #eee; padding: 8px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-around; border: 1px solid #ddd; }
-        .legend-item { display: flex; align-items: center; gap: 5px; font-weight: bold; }
+        .legend { 
+            font-size: 13px; 
+            background: var(--opt-bg); 
+            padding: 10px 12px; 
+            border-radius: 14px; 
+            margin-bottom: 16px; 
+            display: flex; 
+            justify-content: space-around; 
+            border: 2px solid var(--opt-border); 
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--text-dark); }
 
-        .btn-del { width: 40px; height: 40px; padding: 0; font-size: 16px; margin-bottom: 0; background: var(--danger); color: white; border: none; flex-shrink: 0; border-radius: 8px; }
+        .btn-del { 
+            width: 42px; 
+            height: 42px; 
+            padding: 0; 
+            font-size: 15px; 
+            margin-bottom: 0; 
+            background: var(--danger); 
+            color: white; 
+            border: 2px solid var(--danger); 
+            box-shadow: 0 3px 0 var(--danger-shadow);
+            flex-shrink: 0; 
+            border-radius: 12px; 
+        }
+        .btn-del:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 var(--danger-shadow);
+        }
+        .btn-rename {
+            background: #64748B !important;
+            border-color: #64748B !important;
+            box-shadow: 0 3px 0 #475569 !important;
+        }
+        .btn-rename:active:not(:disabled) {
+            box-shadow: 0 1px 0 #475569 !important;
+        }
         
-        #wrong-confirm-box { display: none; background: #fff5f5; border: 2px solid var(--danger); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; }
-        .stat-card { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 2px solid #ddd; }
-        .stat-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 18px; font-weight: bold; }
-        .wrong-list-area { background: #fff; border: 2px solid var(--danger); padding: 10px; border-radius: 8px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 16px; white-space: pre-wrap; }
+        #wrong-confirm-box { 
+            display: none; 
+            background: var(--danger-light); 
+            border: 2px solid var(--danger); 
+            padding: 18px; 
+            border-radius: 18px; 
+            margin-bottom: 16px; 
+            text-align: center; 
+            box-shadow: 0 4px 0 var(--danger-shadow);
+        }
+        .stat-card { 
+            background: var(--opt-bg); 
+            padding: 20px; 
+            border-radius: 20px; 
+            margin-bottom: 20px; 
+            border: 2px solid var(--opt-border); 
+            box-shadow: 0 4px 0 var(--opt-shadow);
+        }
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 18px; font-weight: 800; }
+        .stat-row:last-child { margin-bottom: 0; }
+        .wrong-list-area { 
+            background: #FFFFFF; 
+            border: 2px solid var(--danger); 
+            padding: 14px; 
+            border-radius: 16px; 
+            max-height: 200px; 
+            overflow-y: auto; 
+            font-family: monospace; 
+            font-size: 16px; 
+            font-weight: 700;
+            white-space: pre-wrap; 
+            color: var(--text-dark);
+        }
         
-        .help-content { line-height: 1.6; font-size: 16px; text-align: left; margin-bottom: 20px; }
+        .help-content { line-height: 1.7; font-size: 15px; text-align: left; margin-bottom: 20px; color: var(--text-dark); }
+        .help-content h3 {
+            color: var(--primary); 
+            border-left: 4px solid var(--warning); 
+            padding-left: 10px;
+            font-weight: 900;
+        }
+        .help-content code {
+            background: var(--opt-border);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: 800;
+        }
+
+        .svg-icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -102,192 +529,251 @@
     <div id="timer-display">0</div>
 
     <div id="p-main" class="page active">
-        <h2 style="font-size: 28px;">😈 all in one</h2>
-        <button style="background:var(--primary); color:white; border:none; padding: 20px;" onclick="go('p-mode')">開始遊戲</button>
-        <button onclick="go('p-mgr')">⚙️ 題庫管理 / 備份</button>
-        <button style="background:var(--warning); color:white; border:none;" onclick="go('p-help')">📖 遊戲功能說明</button>
+        <h2 class="brand-header">
+            <!-- 手繪學院風惡魔吉祥物 SVG -->
+            <svg width="42" height="42" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- 左角 -->
+                <path d="M18 24C12 18 10 10 16 8C20 12 22 18 24 20" fill="#F59E0B" stroke="#1E293B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- 右角 -->
+                <path d="M46 24C52 18 54 10 48 8C44 12 42 18 40 20" fill="#F59E0B" stroke="#1E293B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- 頭部主體 -->
+                <rect x="14" y="18" width="36" height="34" rx="17" fill="#1E3A8A" stroke="#1E293B" stroke-width="3.5"/>
+                <!-- 學院帽頂 -->
+                <path d="M32 6L48 13L32 20L16 13L32 6Z" fill="#1E293B" stroke="#1E293B" stroke-width="2.5" stroke-linejoin="round"/>
+                <!-- 帽穗 -->
+                <path d="M44 15V25" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="44" cy="26" r="2.5" fill="#F59E0B"/>
+                <!-- 眼睛 -->
+                <circle cx="25" cy="33" r="4" fill="#FFFFFF"/>
+                <circle cx="25" cy="33" r="2" fill="#1E293B"/>
+                <circle cx="39" cy="33" r="4" fill="#FFFFFF"/>
+                <circle cx="39" cy="33" r="2" fill="#1E293B"/>
+                <!-- 自信微笑與小虎牙 -->
+                <path d="M25 42C27.5 45 36.5 45 39 42" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+                <path d="M27 43L28.5 46L30 43.5" fill="#FFFFFF"/>
+                <path d="M34 43.5L35.5 46L37 43" fill="#FFFFFF"/>
+            </svg>
+            all in one
+        </h2>
+        <button class="btn-primary" style="padding: 20px; font-size: 20px;" onclick="go('p-mode')">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            開始遊戲
+        </button>
+        <button onclick="go('p-mgr')">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            題庫管理 / 備份
+        </button>
+        <button class="btn-warning" onclick="go('p-help')">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            遊戲功能說明
+        </button>
     </div>
 
    <div id="p-help" class="page">
-        <h2 style="font-size: 24px;">📖 深度使用指南與設計邏輯</h2>
-        <div class="help-content" style="text-align: left; line-height: 1.7; font-size: 15px; color: #333;">
+        <h2 style="font-size: 24px;">
+            <svg class="svg-icon" style="color:var(--primary); width:26px; height:26px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            深度使用指南與設計邏輯
+        </h2>
+        <div class="help-content">
             
             <p>本工具不僅是測驗機，更是基於<b>認知心理學</b>設計的記憶強化系統。以下是各項核心功能的詳細解析：</p>
 
             <section style="margin-bottom: 20px;">
-                <h3 style="color: var(--primary); border-left: 4px solid var(--primary); padding-left: 8px;">1. 結構化題庫管理 (Structured Organization)</h3>
+                <h3>1. 結構化題庫管理 (Structured Organization)</h3>
                 <p><b>具體操作：</b>在「題庫管理」中建立不同名稱的資料夾（如：TOEIC 單字、課本 L1）。</p>
                 <p><b>設計初衷：</b>人類大腦對於有規律、有分類的資訊吸收最快。透過分類，您可以縮小單次學習的範疇，建立大腦的「索引標籤」，避免資訊過載產生的混淆。</p>
             </section>
 
             <section style="margin-bottom: 20px;">
-                <h3 style="color: var(--primary); border-left: 4px solid var(--primary); padding-left: 8px;">2. 智慧化錄入系統 (Smart Entry)</h3>
-                <p><b>具體操作：</b>單筆新增適合零星補充；「🚀 批次匯入」則支援 <code>英文 中文</code> 格式的文字直接貼上。</p>
+                <h3>2. 智慧化錄入系統 (Smart Entry)</h3>
+                <p><b>具體操作：</b>單筆新增適合零星補充；「批次匯入」則支援 <code>英文 中文</code> 格式的文字直接貼上。</p>
                 <p><b>設計初衷：</b>錄入資料不應成為學習的阻礙。批次功能是為了讓您將外部教材（如 PDF、網頁單字表）快速轉化為數位練習題，將寶貴的精力集中在「記憶」而非「打字」。</p>
             </section>
 
             <section style="margin-bottom: 20px;">
-                <h3 style="color: var(--primary); border-left: 4px solid var(--primary); padding-left: 8px;">3. 階梯式測驗模式 (Scaffolded Testing)</h3>
+                <h3>3. 階梯式測驗模式 (Scaffolded Testing)</h3>
                 <p><b>具體操作：</b>先進行「英翻中選擇」熟悉單字形象，再進行「中翻英填充」挑戰拼寫。</p>
                 <p><b>設計初衷：</b>遵循「由淺入深」的學習曲線。選擇題練習的是<b>「再認記憶」</b>（Recognition），而填充題則是難度最高的<b>「回憶記憶」</b>（Recall）。兩者並行能確保從看到單字有印象，進步到能完整運用。</p>
             </section>
 
             <section style="margin-bottom: 20px;">
-                <h3 style="color: var(--primary); border-left: 4px solid var(--primary); padding-left: 8px;">4. 答對率排序邏輯 (Data-Driven Priority)</h3>
+                <h3>4. 答對率排序邏輯 (Data-Driven Priority)</h3>
                 <p><b>具體操作：</b>編輯列表會動態將答對率最低的單字置頂，並以藍色與綠色方塊標示熟練度。</p>
                 <p><b>設計初衷：</b>落實「精準練習」。大多數人傾向重複練習已經會的單字，這會造成效率低下。系統強制將您的「弱點」推至眼前，讓每一分鐘的複習都發揮最大價值。</p>
             </section>
 
             <section style="margin-bottom: 20px;">
-                <h3 style="color: var(--primary); border-left: 4px solid var(--primary); padding-left: 8px;">5. 自定義難度與鷹架提示 (Adaptive Difficulty)</h3>
+                <h3>5. 自定義難度與鷹架提示 (Adaptive Difficulty)</h3>
                 <p><b>具體操作：</b>測驗前可設定「計時秒數」增加難度，或勾選「首尾提示」降低挫折感。</p>
                 <p><b>設計初衷：</b>計時器是為了訓練<b>「自動化反應」</b>（不經思考就能反射單字意），模擬真實對話壓力。首尾提示則是學習心理學中的「鷹架功能」，在您差一點就想起來時給予關鍵助推。</p>
             </section>
 
             <section style="margin-bottom: 20px;">
-                <h3 style="color: var(--primary); border-left: 4px solid var(--primary); padding-left: 8px;">6. 即時回饋與閉環複習 (Feedback Loop)</h3>
+                <h3>6. 即時回饋與閉環複習 (Feedback Loop)</h3>
                 <p><b>具體操作：</b>答錯時立即彈出答案，測驗結束後提供「一鍵複製錯題」。</p>
                 <p><b>設計初衷：</b>大腦在犯錯的那一刻學習力最高。即時糾正能中斷錯誤的聯結；複製錯題功能則讓您可以將這份清單再次匯入新題庫，形成「練習→發現錯誤→專項複習」的完美閉環。</p>
             </section>
 
             <section style="margin-bottom: 20px;">
-                <h3 style="color: var(--primary); border-left: 4px solid var(--primary); padding-left: 8px;">7. JSON 本地備份機制 (Data Portability)</h3>
+                <h3>7. JSON 本地備份機制 (Data Portability)</h3>
                 <p><b>具體操作：</b>定期使用「匯出備份」下載檔案，或在換手機時使用「匯入」讀取舊資料。</p>
                 <p><b>設計初衷：</b>為了隱私，您的數據僅儲存在您自己的手機裡。但網頁緩存可能遺失，定期匯出 JSON 不僅是為了安全，更是讓您可以將自己辛苦累積的數位資產永久保存。</p>
             </section>
- 	    <section style="margin-bottom: 20px;">
-                <h3 style="color: var(--primary); border-left: 4px solid var(--primary); padding-left: 8px;">8.開發者的話 </h3>
-                <p>如您所見，這是一個由我與 AI 協作開發的網頁小遊戲。在所有功能中，我最推薦**「智慧批次匯入」**：只要您的文字格式維持「每行一個英文與對應中文」，系統即可自動解析並建檔。這意味著您可以將整頁單字交由 AI 快速整理後直接匯入，徹底告別手動逐字輸入的低效。
+            <section style="margin-bottom: 20px;">
+                <h3>8. 開發者的話</h3>
+                <p>如您所見，這是一個由我與 AI 協作開發的網頁小遊戲。在所有功能中，我最推薦<b>「智慧批次匯入」</b>：只要您的文字格式維持「每行一個英文與對應中文」，系統即可自動解析並建檔。這意味著您可以將整頁單字交由 AI 快速整理後直接匯入，徹底告別手動逐字輸入的低效。
 軟體仍持續進化中，若您在使用過程中遇到任何異常，或有新的功能提案與優化建議，誠摯歡迎透過電子郵件與我聯繫：starsword0000@gmail.com</p>
             </section>
 
         </div>
-        <button onclick="go('p-main')" style="background:var(--primary); color:white; border:none; margin-top: 10px;">我了解了，返回主選單</button>
+        <button onclick="go('p-main')" class="btn-primary" style="margin-top: 10px;">我了解了，返回主選單</button>
     </div>
 
     <div id="p-mode" class="page">
         <h2>請選擇遊戲模式</h2>
-        <button style="border-color: var(--primary); color: var(--primary);" onclick="setGameMode('choice')">🅰️ 英翻中選擇</button>
-        <button style="border-color: var(--success); color: var(--success);" onclick="setGameMode('input')">✍️ 中翻英填充</button>
-        <button onclick="go('p-main')" style="margin-top: 10px; font-size: 14px;">返回主畫面</button>
+        <button class="btn-outline-primary" onclick="setGameMode('choice')">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
+            英翻中選擇
+        </button>
+        <button class="btn-outline-success" onclick="setGameMode('input')">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            中翻英填充
+        </button>
+        <button onclick="go('p-main')" style="margin-top: 10px; font-size: 15px;">返回主畫面</button>
     </div>
 
     <div id="p-sel" class="page">
         <h2 id="sel-title-text">設定測驗</h2>
         <div id="sel-list"></div>
-        <div id="quiz-config" style="display:none; margin-top:20px; border-top: 1px solid #eee; padding-top: 15px;">
+        <div id="quiz-config" style="display:none; margin-top:20px; border-top: 2px solid var(--opt-border); padding-top: 18px;">
             <label>1. 測驗題數：</label>
             <input type="number" id="quiz-num-input" min="1" inputmode="numeric">
             <label>2. 每題時間 (秒)：</label>
             <input type="number" id="quiz-time-input" min="0" inputmode="numeric" value="10">
-            <div id="config-choice-only" style="display:none; margin-bottom: 15px;">
-                <label style="display: flex; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 8px;">
-                    <input type="checkbox" id="mask-toggle" style="width: auto; margin-right: 10px; margin-bottom: 0;"> 遮蓋選項（手動揭曉）
-                </label>
-            </div>
             <div id="config-input-only" style="display:none;">
-                <label style="display: flex; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 8px;">
-                    <input type="checkbox" id="hint-toggle" style="width: auto; margin-right: 10px; margin-bottom: 0;"> 開啟首尾提示
+                <label style="display: flex; align-items: center; background: var(--opt-bg); padding: 14px; border-radius: 16px; border: 2px solid var(--opt-border); cursor: pointer;">
+                    <input type="checkbox" id="hint-toggle" style="width: 22px; height: 22px; margin-right: 12px; margin-bottom: 0; accent-color: var(--primary);"> 開啟首尾提示
                 </label>
             </div>
-            <p id="pool-info" style="font-size:14px; color:#555;"></p>
-            <button style="background:var(--success); color:white; border:none;" onclick="startQuiz()">確認開始！</button>
+            <p id="pool-info" style="font-size:14px; color:var(--text-muted); margin-top: 8px;"></p>
+            <button class="btn-success" onclick="startQuiz()">確認開始！</button>
         </div>
         <button onclick="go('p-mode')" style="margin-top:10px;">返回</button>
     </div>
 
     <div id="p-quiz" class="page">
         <div class="progress-bar"><div id="progress-fill"></div></div>
-        <div id="q-info" style="text-align:center; font-weight:800; font-size:18px; margin-bottom: 10px;"></div>
+        <div id="q-info" style="text-align:center; font-weight:900; font-size:18px; margin-bottom: 10px; color: var(--text-muted);"></div>
         <div class="quiz-word-container">
             <div class="quiz-word" id="q-word-display"></div>
             <div id="q-hint-display" class="scaffold-text" style="display:none;"></div>
         </div>
         <div id="ui-choice" style="display:none;">
-            <div class="options-wrapper">
-                <div id="q-options-mask" class="options-mask" onclick="revealOptions()">🔒 選項已遮蓋，點擊此處揭曉</div>
-                <div id="q-options-container"></div>
-            </div>
-            <div id="choice-next-box" style="display:none; margin-top: 10px;">
-                <button onclick="nextQ()" style="background:#000; color:#fff;">確認並繼續 ➔</button>
+            <div id="q-options-container"></div>
+            <div id="choice-next-box" style="display:none; margin-top: 12px;">
+                <button onclick="nextQ()" class="btn-dark">
+                    確認並繼續
+                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
             </div>
         </div>
         <div id="ui-input" style="display:none;">
             <div id="wrong-confirm-box">
-                <div id="wrong-msg"></div>
-                <button onclick="nextQ(true)" style="background:var(--danger); color:white; border:none;">我知道了，下一題</button>
+                <div id="wrong-msg" style="margin-bottom: 12px; color: var(--text-dark);"></div>
+                <button onclick="nextQ(true)" class="btn-danger" style="margin-bottom: 0;">我知道了，下一題</button>
             </div>
             <div id="input-zone">
                 <input type="text" id="ans-in" autocomplete="off" spellcheck="false" placeholder="輸入答案">
-                <button onclick="checkInputAns()" style="background:var(--primary); color:white; border:none;">送出</button>
+                <button onclick="checkInputAns()" class="btn-primary">送出</button>
             </div>
         </div>
-        <button onclick="if(confirm('結束測驗？')) go('p-main')" style="margin-top:30px; font-size:14px; opacity:0.6; border:none;">結束遊戲</button>
+        <button onclick="if(confirm('結束測驗？')) go('p-main')" class="btn-ghost" style="margin-top:24px; font-size:15px;">結束遊戲</button>
     </div>
 
     <div id="p-result" class="page">
-        <h2>🎉 測驗完成</h2>
+        <h2>
+            <svg class="svg-icon" style="color:var(--warning); width:28px; height:28px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+            測驗完成
+        </h2>
         <div class="stat-card">
             <div class="stat-row"><span>總題數：</span><span id="res-total">0</span></div>
             <div class="stat-row"><span>答對數：</span><span id="res-correct" style="color:var(--success);">0</span></div>
             <div class="stat-row"><span>答對率：</span><span id="res-rate">0%</span></div>
         </div>
-        <div id="res-wrong-section" style="display:none;">
+        <div id="res-wrong-section" style="display:none; margin-bottom: 16px;">
             <div id="res-wrong-list" class="wrong-list-area"></div>
-            <button onclick="copyWrongList()" style="margin-top:10px;">📋 複製錯題</button>
+            <button onclick="copyWrongList()" style="margin-top:12px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                複製錯題
+            </button>
         </div>
-        <button onclick="go('p-main')" style="background:var(--primary); color:white; border:none;">返回主選單</button>
+        <button onclick="go('p-main')" class="btn-primary">返回主選單</button>
     </div>
 
     <div id="p-mgr" class="page">
-        <h2>🗂 題庫管理</h2>
+        <h2>
+            <svg class="svg-icon" style="color:var(--primary); width:26px; height:26px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            題庫管理
+        </h2>
         <input type="text" id="db-in" placeholder="輸入新題庫名稱">
-        <button onclick="addDB()" style="background:var(--primary); color:white; border:none;">建立新題庫</button>
-        <div id="db-list"></div>
-        <div style="margin-top:20px; text-align:center;">
-            <button onclick="exportJSON()" style="font-size:14px;">匯出備份 (.json)</button>
-            <input type="file" id="import-file" onchange="importJSON(event)" style="font-size:12px; margin-top:10px;">
+        <button onclick="addDB()" class="btn-primary">建立新題庫</button>
+        <div id="db-list" style="margin-top: 10px;"></div>
+        <div style="margin-top:24px; padding: 16px; background: var(--opt-bg); border: 2px dashed var(--opt-shadow); border-radius: 18px; text-align:center;">
+            <button onclick="exportJSON()" style="font-size:15px; margin-bottom: 10px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                匯出備份 (.json)
+            </button>
+            <input type="file" id="import-file" onchange="importJSON(event)" style="font-size:13px; margin-top:4px; margin-bottom:0; padding: 10px; background: #FFF;">
         </div>
-        <button onclick="go('p-main')">返回</button>
+        <button onclick="go('p-main')" style="margin-top: 16px;">返回</button>
     </div>
 
     <div id="p-edit" class="page">
         <h2 id="edit-title">編輯中</h2>
         <div class="legend">
-            <div class="legend-item"><div class="stat-box stat-choice" style="width:20px; height:20px;"></div> 選擇題答對率</div>
-            <div class="legend-item"><div class="stat-box stat-input" style="width:20px; height:20px;"></div> 填充題答對率</div>
+            <div class="legend-item"><div class="stat-box stat-choice" style="width:20px; height:20px; border-radius: 6px;"></div> 選擇題答對率</div>
+            <div class="legend-item"><div class="stat-box stat-input" style="width:20px; height:20px; border-radius: 6px;"></div> 填充題答對率</div>
         </div>
         
         <div id="single-edit-area">
             <input type="text" id="w-in" placeholder="英文單字">
             <input type="text" id="m-in" placeholder="中文翻譯">
             <input type="hidden" id="editing-idx" value="-1">
-            <button id="save-btn" onclick="saveWord()" style="background:var(--primary); color:white; border:none;">加入單字</button>
-            <div style="display: flex; gap: 5px;">
-                <button onclick="openBatchUI('import')" style="font-size:13px; flex:1;">🚀 批次匯入</button>
-                <button onclick="startSelectionMode()" style="font-size:13px; flex:1;">📤 批次匯出</button>
+            <button id="save-btn" onclick="saveWord()" class="btn-primary">加入單字</button>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="openBatchUI('import')" style="font-size:14px; flex:1; padding: 12px;">
+                    <svg class="svg-icon" style="width:18px; height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    批次匯入
+                </button>
+                <button onclick="startSelectionMode()" style="font-size:14px; flex:1; padding: 12px;">
+                    <svg class="svg-icon" style="width:18px; height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    批次匯出
+                </button>
             </div>
         </div>
 
-        <div id="select-control-bar" style="display:none; background:#eee; padding:10px; border-radius:8px; margin-bottom:10px; display:flex; gap:10px;">
-            <button onclick="toggleSelectAll(true)" style="padding:8px; font-size:14px; flex:1;">全選</button>
-            <button onclick="toggleSelectAll(false)" style="padding:8px; font-size:14px; flex:1;">全不選</button>
-            <button onclick="finishSelection()" style="padding:8px; font-size:14px; flex:1; background:var(--success); color:white; border:none;">確認選取</button>
-            <button onclick="cancelSelection()" style="padding:8px; font-size:14px; flex:1; background:#666; color:white; border:none;">取消</button>
+        <div id="select-control-bar" style="display:none; background:var(--opt-bg); border: 2px solid var(--opt-border); padding:10px; border-radius:16px; margin-bottom:12px; gap:8px;">
+            <button onclick="toggleSelectAll(true)" style="padding:10px 8px; font-size:14px; flex:1; margin-bottom:0;">全選</button>
+            <button onclick="toggleSelectAll(false)" style="padding:10px 8px; font-size:14px; flex:1; margin-bottom:0;">全不選</button>
+            <button onclick="finishSelection()" class="btn-success" style="padding:10px 8px; font-size:14px; flex:1; margin-bottom:0;">確認選取</button>
+            <button onclick="cancelSelection()" style="padding:10px 8px; font-size:14px; flex:1; margin-bottom:0; background:#64748B; color:white; border-color:#64748B; box-shadow: 0 4px 0 #475569;">取消</button>
         </div>
 
-        <div id="batch-edit-area" style="display:none; background:var(--batch-bg); padding:15px; border-radius:12px; margin-top:10px;">
-            <h3 id="batch-title" style="margin-top:0;">批次處理</h3>
-            <textarea id="batch-input" rows="8" placeholder="格式：英文 中文 [選總,選對] {填總,填對}"></textarea>
+        <div id="batch-edit-area" style="display:none; background:var(--batch-bg); border: 2px solid var(--opt-border); padding:18px; border-radius:20px; margin-top:12px;">
+            <h3 id="batch-title" style="margin-top:0; color:var(--primary);">批次處理</h3>
+            <textarea id="batch-input" rows="8" placeholder="格式：英文 中文 [選總,選對] {填總,填對}" style="background:#FFF;"></textarea>
             <div id="batch-footer-btns">
-                <button id="batch-submit-btn" onclick="handleBatchFinish()" style="background:var(--primary); color:white; border:none;">完成儲存</button>
-                <button id="batch-copy-btn" onclick="copyBatchContent()" style="background:#444; color:white; border:none; display:none;">📋 一鍵複製全部</button>
-                <button onclick="toggleBatch(false)" style="background:none; border:none; margin-bottom: 0;">取消</button>
+                <button id="batch-submit-btn" onclick="handleBatchFinish()" class="btn-primary">完成儲存</button>
+                <button id="batch-copy-btn" onclick="copyBatchContent()" class="btn-dark" style="display:none;">
+                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    一鍵複製全部
+                </button>
+                <button onclick="toggleBatch(false)" class="btn-ghost" style="margin-bottom: 0;">取消</button>
             </div>
         </div>
 
-        <div id="word-list-container" style="max-height:400px; overflow-y:auto; margin-top:15px; border:1px solid #eee;"></div>
-        <button id="edit-exit-btn" onclick="go('p-mgr')" style="margin-top:10px;">離開編輯</button>
+        <div id="word-list-container" style="max-height:400px; overflow-y:auto; margin-top:16px; border:2px solid var(--opt-border); border-radius: 18px; padding: 6px;"></div>
+        <button id="edit-exit-btn" onclick="go('p-mgr')" style="margin-top:16px;">離開編輯</button>
     </div>
 </div>
 
@@ -316,7 +802,8 @@
     let correctCount = 0;
     let wrongList = [];
     let isSelecting = false;
-    let isMaskActive = false;
+
+    const SVG_FOLDER = `<svg class="svg-icon" style="color:var(--warning); margin-right:6px;" viewBox="0 0 24 24" fill="currentColor" stroke="var(--text-dark)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`;
 
     function formatItemToString(item) {
         let s = `${item.w} ${item.m}`;
@@ -418,7 +905,6 @@
     function setGameMode(mode) {
         currentGameMode = mode;
         document.getElementById('sel-title-text').innerText = (mode === 'choice' ? '英翻中：設定' : '中翻英：設定');
-        document.getElementById('config-choice-only').style.display = (mode === 'choice' ? 'block' : 'none');
         document.getElementById('config-input-only').style.display = (mode === 'input' ? 'block' : 'none');
         go('p-sel');
     }
@@ -436,8 +922,8 @@
         let html = '';
         for(let n in db) {
             html += `<div class="item">
-                <span onclick="openEdit('${n}')" style="color:var(--primary); font-weight:bold; cursor:pointer; flex:1;">📂 ${n} (${db[n].length})</span>
-                <button class="btn-del" style="background:#666;" onclick="renameDB('${n}')">名</button>
+                <span onclick="openEdit('${n}')" style="color:var(--primary); font-weight:800; cursor:pointer; flex:1; display:flex; align-items:center;">${SVG_FOLDER} ${n} (${db[n].length})</span>
+                <button class="btn-del btn-rename" onclick="renameDB('${n}')">名</button>
                 <button class="btn-del" onclick="if(confirm('刪除整個題庫？')){delete db['${n}']; saveDB(); drawDBList();}">刪</button>
             </div>`;
         }
@@ -458,8 +944,9 @@
     function resetEdit() {
         document.getElementById('w-in').value = ""; document.getElementById('m-in').value = "";
         document.getElementById('editing-idx').value = "-1";
-        document.getElementById('save-btn').innerText = "加入單字";
-        document.getElementById('save-btn').style.background = "var(--primary)";
+        const saveBtn = document.getElementById('save-btn');
+        saveBtn.innerText = "加入單字";
+        saveBtn.className = "btn-primary";
         toggleBatch(false);
     }
 
@@ -487,7 +974,7 @@
                 <input type="checkbox" class="batch-checkbox" data-idx="${i}">
                 <div class="word-clickable" onclick="${isSelecting ? `toggleItemCheck(${i})` : `triggerEditWord(${i})`}">
                     <span class="word-text">${item.w}</span>
-                    <small style="color:#666">${item.m}</small>
+                    <small style="color:var(--text-muted); font-weight:700;">${item.m}</small>
                 </div>
                 <div class="stat-group">
                     <div class="stat-box stat-choice">${getModeRate(item, 'choice')}</div>
@@ -496,7 +983,7 @@
                 <button class="btn-del" onclick="db['${currentDB}'].splice(${i},1); saveDB(); drawWordList();">X</button>
             </div>`;
         });
-        document.getElementById('word-list-container').innerHTML = html || '<p style="padding:20px; text-align:center; color:#999;">沒有單字</p>';
+        document.getElementById('word-list-container').innerHTML = html || '<p style="padding:20px; text-align:center; color:var(--text-muted);">沒有單字</p>';
     }
 
     function startSelectionMode() {
@@ -521,7 +1008,7 @@
         isSelecting = false;
         document.getElementById('single-edit-area').style.display = 'block';
         document.getElementById('select-control-bar').style.display = 'none';
-        document.getElementById('edit-exit-btn').style.display = 'block';
+        document.getElementById('edit-exit-btn').style.display = 'inline-flex';
         drawWordList();
     }
 
@@ -531,17 +1018,17 @@
         const selectedData = selectedIdxs.map(idx => db[currentDB][idx]);
         isSelecting = false;
         document.getElementById('select-control-bar').style.display = 'none';
-        document.getElementById('edit-exit-btn').style.display = 'block';
+        document.getElementById('edit-exit-btn').style.display = 'inline-flex';
         
         const input = document.getElementById('batch-input');
         const submit = document.getElementById('batch-submit-btn');
         const copyBtn = document.getElementById('batch-copy-btn');
         
-        document.getElementById('batch-title').innerText = `📤 匯出選取的單字 (${selectedData.length} 個)`;
+        document.getElementById('batch-title').innerText = `匯出選取的單字 (${selectedData.length} 個)`;
         input.value = selectedData.map(i => formatItemToString(i)).join('\n');
         input.readOnly = true; 
         submit.style.display = "none"; 
-        copyBtn.style.display = "block";
+        copyBtn.style.display = "inline-flex";
         toggleBatch(true);
     }
 
@@ -556,8 +1043,8 @@
         const submit = document.getElementById('batch-submit-btn');
         const copyBtn = document.getElementById('batch-copy-btn');
         if(mode === 'import') {
-            document.getElementById('batch-title').innerText = "🚀 智慧批次匯入";
-            input.value = ""; input.readOnly = false; submit.style.display = "block"; copyBtn.style.display = "none";
+            document.getElementById('batch-title').innerText = "智慧批次匯入";
+            input.value = ""; input.readOnly = false; submit.style.display = "inline-flex"; copyBtn.style.display = "none";
             toggleBatch(true);
         }
     }
@@ -587,8 +1074,9 @@
         document.getElementById('w-in').value = item.w;
         document.getElementById('m-in').value = item.m;
         document.getElementById('editing-idx').value = i;
-        document.getElementById('save-btn').innerText = "更新單字";
-        document.getElementById('save-btn').style.background = "var(--warning)";
+        const saveBtn = document.getElementById('save-btn');
+        saveBtn.innerText = "更新單字";
+        saveBtn.className = "btn-warning";
     }
 
     function exportJSON() {
@@ -620,9 +1108,9 @@
 
     function prepQuiz(n) {
         currentDB = n;
-        document.querySelectorAll('#sel-list button').forEach(b => b.style.border = '2px solid #333');
+        document.querySelectorAll('#sel-list button').forEach(b => b.classList.remove('selected-db'));
         const target = document.getElementById('btn-sel-'+n);
-        if(target) target.style.border = '5px solid black';
+        if(target) target.classList.add('selected-db');
         document.getElementById('quiz-config').style.display = 'block';
         document.getElementById('quiz-num-input').value = db[n].length;
         document.getElementById('pool-info').innerText = "上限：" + db[n].length + " 題";
@@ -630,7 +1118,7 @@
 
     function drawSelList() {
         let html = '';
-        for(let n in db) html += `<button id="btn-sel-${n}" onclick="prepQuiz('${n}')">${n} (${db[n].length})</button>`;
+        for(let n in db) html += `<button class="db-sel-btn" id="btn-sel-${n}" onclick="prepQuiz('${n}')">${SVG_FOLDER} ${n} (${db[n].length})</button>`;
         document.getElementById('sel-list').innerHTML = html || '請先建立題庫';
     }
 
@@ -640,9 +1128,6 @@
         let limit = parseInt(document.getElementById('quiz-num-input').value) || pool.length;
         quizQueue = [...pool].sort(() => 0.5 - Math.random()).slice(0, limit);
         currentIdx = 0; correctCount = 0; wrongList = [];
-        
-        isMaskActive = (currentGameMode === 'choice' && document.getElementById('mask-toggle').checked);
-        
         document.getElementById('ui-choice').style.display = (currentGameMode === 'choice' ? 'block' : 'none');
         document.getElementById('ui-input').style.display = (currentGameMode === 'input' ? 'block' : 'none');
         go('p-quiz'); renderNextQ();
@@ -686,17 +1171,6 @@
             html += `<button class="option-btn" onclick="checkChoiceAns(this, '${o.replace(/'/g, "\\'")}', '${q.m.replace(/'/g, "\\")}')">${o}</button>`;
         });
         document.getElementById('q-options-container').innerHTML = html;
-
-        const maskEl = document.getElementById('q-options-mask');
-        if (isMaskActive) {
-            maskEl.style.display = 'flex';
-        } else {
-            maskEl.style.display = 'none';
-        }
-    }
-
-    function revealOptions() {
-        document.getElementById('q-options-mask').style.display = 'none';
     }
 
     function checkChoiceAns(btn, sel, cor) {
@@ -706,7 +1180,7 @@
         if(sel === cor) {
             btn.classList.add('correct'); updateStat(q, true);
             confetti({ particleCount: 40, spread: 50 }); correctCount++;
-            setTimeout(nextQ, 120);
+            setTimeout(nextQ, 800);
         } else { btn.classList.add('wrong'); handleWrong(q); }
     }
 
@@ -737,7 +1211,6 @@
     function handleWrong(q) {
         updateStat(q, false); wrongList.push(q);
         if(currentGameMode === 'choice') {
-            document.getElementById('q-options-mask').style.display = 'none';
             document.querySelectorAll('.option-btn').forEach(b => {
                 if(b.innerText === q.m) b.classList.add('correct');
                 b.disabled = true;
@@ -745,7 +1218,7 @@
             document.getElementById('choice-next-box').style.display = 'block';
         } else {
             document.getElementById('input-zone').style.display = 'none';
-            document.getElementById('wrong-msg').innerHTML = `❌ 正確答案是：<br><b style="font-size:24px;">${q.w}</b>`;
+            document.getElementById('wrong-msg').innerHTML = `正確答案是：<br><b style="font-size:24px; color:var(--danger);">${q.w}</b>`;
             document.getElementById('wrong-confirm-box').style.display = 'block';
         }
     }
