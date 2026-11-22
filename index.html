@@ -3,591 +3,1263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>😈單字測驗小遊戲</title>
+    <title>MILITECH // TACTICAL_VOCAB_OS v2.77</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@700;800;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
+        /* ========================================================
+           1. 克制暗黑軍工終端機色票系統 (MILITECH / ARASAKA OS)
+           ======================================================== */
         :root {
-            --bg-cream: #F7F4EC;
-            --card-bg: #FFFFFF;
-            --text-dark: #1E293B;
-            --text-muted: #64748B;
-            
-            --primary: #1E3A8A;
-            --primary-shadow: #172554;
-            --primary-light: #EFF6FF;
-            
-            --warning: #F59E0B;
-            --warning-shadow: #D97706;
-            --warning-light: #FEF3C7;
-            
-            --success: #10B981;
-            --success-shadow: #059669;
-            --success-light: #ECFDF5;
-            
-            --danger: #EF4444;
-            --danger-shadow: #B91C1C;
-            --danger-light: #FEF2F2;
-            
-            --opt-bg: #F8FAFC;
-            --opt-border: #E2E8F0;
-            --opt-shadow: #CBD5E1;
-            
-            --edit-bg: #FEF9C3;
-            --batch-bg: #F1F5F9;
+            --bg-abyss: #080A0F;
+            --panel-bg: #0E1118;
+            --surface-dark: #131720;
+            --surface-hover: #181E2B;
+            --border-metal: #262D3D;
+            --border-bright: #3A455C;
+
+            --text-main: #E8EEF7;
+            --text-muted: #76839B;
+            --cyber-black: #050608;
+
+            --cyber-yellow: #FCEE09;
+            --cyber-yellow-dim: rgba(252, 238, 9, 0.25);
+            --arasaka-red: #FF2A54;
+            --arasaka-red-dim: rgba(255, 42, 84, 0.25);
+            --netrunner-cyan: #00F0FF;
+            --netrunner-cyan-dim: rgba(0, 240, 255, 0.25);
+
+            --cut-lg: 14px;
+            --cut-md: 9px;
+            --cut-sm: 5px;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            font-family: 'Nunito', 'Noto Sans TC', system-ui, -apple-system, sans-serif; 
-            background: var(--bg-cream); 
-            margin: 0; 
-            padding: 20px 15px; 
-            color: var(--text-dark); 
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Rajdhani', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-abyss);
+            background-image:
+                linear-gradient(rgba(0, 240, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.025) 1px, transparent 1px);
+            background-size: 28px 28px;
+            margin: 0;
+            padding: 18px 14px;
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             align-items: flex-start;
             justify-content: center;
+            position: relative;
         }
 
-        .container { 
-            width: 100%; 
-            max-width: 500px; 
-            background: var(--card-bg); 
-            padding: 28px 24px; 
-            border-radius: 24px; 
-            box-shadow: 0 12px 32px rgba(30, 41, 59, 0.08); 
-            margin: auto; 
-            position: relative; 
-            border: 2px solid #EAE5D9;
+        /* 細微 SVG feTurbulence 雜訊顆粒紋理 */
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.032;
         }
-        
+
+        /* 外層容器承載神經同步外發光 */
+        .hud-outer-frame {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+            position: relative;
+        }
+
+        @keyframes hudEdgeSyncFlash {
+            0% {
+                filter: drop-shadow(0 0 24px rgba(0, 240, 255, 0.7)) drop-shadow(0 0 8px rgba(252, 238, 9, 0.5));
+            }
+            100% {
+                filter: drop-shadow(0 0 0 rgba(0, 240, 255, 0));
+            }
+        }
+        .hud-outer-frame.hud-sync-flash {
+            animation: hudEdgeSyncFlash 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* 裝甲斜切主面板 */
+        .container {
+            width: 100%;
+            background: var(--panel-bg);
+            padding: 22px 20px 22px;
+            clip-path: polygon(
+                var(--cut-lg) 0,
+                100% 0,
+                100% calc(100% - var(--cut-lg)),
+                calc(100% - var(--cut-lg)) 100%,
+                0 100%,
+                0 var(--cut-lg)
+            );
+            border: 1px solid var(--border-metal);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.15s ease;
+        }
+
+        .container.hud-sync-flash {
+            border-color: var(--netrunner-cyan);
+        }
+
+        /* 頂部即時跳動狀態列 */
+        .hud-telemetry-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Orbitron', monospace;
+            font-size: 9.5px;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(38, 45, 61, 0.7);
+            user-select: none;
+        }
+        .telemetry-live {
+            color: var(--netrunner-cyan);
+            opacity: 0.85;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-right: 8px;
+        }
+
+        /* 右上角合成音效開關 */
+        #audio-toggle-btn {
+            width: auto !important;
+            min-width: 52px;
+            height: 26px;
+            padding: 0 10px !important;
+            margin: 0 !important;
+            background: var(--surface-dark) !important;
+            color: var(--netrunner-cyan) !important;
+            border: 1px solid var(--border-metal) !important;
+            border-left: 3px solid var(--netrunner-cyan) !important;
+            clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        #audio-toggle-btn.muted {
+            color: var(--text-muted) !important;
+            border-left-color: var(--border-metal) !important;
+        }
+
+        /* 垂直掃描線衝擊（答對觸發） */
+        @keyframes scanlineSweep {
+            0% { top: -25%; opacity: 0.85; }
+            100% { top: 115%; opacity: 0; }
+        }
+        .scanline-surge {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 26px;
+            background: linear-gradient(180deg, transparent, rgba(0, 240, 255, 0.3), rgba(252, 238, 9, 0.45), transparent);
+            pointer-events: none;
+            z-index: 40;
+            animation: scanlineSweep 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* 答錯微震動效 */
+        @keyframes cyberShake {
+            0% { transform: translate(0, 0); }
+            15% { transform: translate(-6px, 2px); }
+            30% { transform: translate(6px, -2px); }
+            45% { transform: translate(-5px, -1px); }
+            60% { transform: translate(5px, 2px); }
+            75% { transform: translate(-3px, 1px); }
+            90% { transform: translate(3px, -1px); }
+            100% { transform: translate(0, 0); }
+        }
+        .shake-active {
+            animation: cyberShake 0.25s linear;
+        }
+
+        /* 頁面切換 */
         .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.2s ease-out; }
-
-        @keyframes fadeIn {
+        .page.active { display: block; animation: hudReveal 0.18s ease-out; }
+        @keyframes hudReveal {
             from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        h2 { 
-            font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
-            border-bottom: 3px solid var(--opt-border); 
-            padding-bottom: 14px; 
-            margin-top: 0; 
-            margin-bottom: 20px;
-            color: var(--text-dark); 
-            text-align: center; 
-            letter-spacing: 0.5px;
+        /* 標題與精密 HUD 動態雷達核心 */
+        h2 {
+            font-family: 'Orbitron', 'Noto Sans TC', sans-serif;
+            border-bottom: 1px solid var(--border-metal);
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            text-align: center;
+            letter-spacing: 1px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            text-transform: uppercase;
+            font-size: 18px;
         }
 
-        .brand-header {
-            font-family: 'Fredoka', 'Nunito', sans-serif;
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--primary);
-            border-bottom: 3px solid var(--opt-border);
-            padding-bottom: 18px;
-            margin-bottom: 24px;
+        .radar-hero-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
+            gap: 14px;
+            background: var(--surface-dark);
+            border: 1px solid var(--border-metal);
+            border-left: 4px solid var(--cyber-yellow);
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
         }
 
-        p, label { 
-            font-weight: 800; 
-            color: var(--text-dark); 
-            display: block; 
-            margin-bottom: 8px; 
+        @keyframes radarSpinSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes radarSpinReverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+        @keyframes waveBarPulse {
+            0%, 100% { transform: scaleY(0.35); }
+            50% { transform: scaleY(1); }
+        }
+        .radar-ring-outer {
+            transform-origin: 32px 32px;
+            animation: radarSpinSlow 14s linear infinite;
+        }
+        .radar-ring-inner {
+            transform-origin: 32px 32px;
+            animation: radarSpinReverse 9s linear infinite;
+        }
+        .wave-bar {
+            transform-origin: center;
+            animation: waveBarPulse 1.1s ease-in-out infinite;
+        }
+        .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.2s; }
+
+        .brand-title-block {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+        .brand-sub-tag {
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            color: var(--netrunner-cyan);
+            letter-spacing: 1.5px;
+            margin-bottom: 2px;
+        }
+        .brand-main-title {
+            font-family: 'Orbitron', 'Noto Sans TC', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            color: var(--text-main);
+            line-height: 1.1;
         }
 
-        /* 3D 實體按鈕系統 */
-        button { 
-            width: 100%; 
-            padding: 16px 20px; 
-            margin-bottom: 14px; 
-            border: 2px solid var(--opt-border); 
-            border-radius: 16px; 
-            font-family: inherit;
-            font-size: 18px; 
-            font-weight: 800; 
+        p, label {
+            font-weight: 700;
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 8px;
+            letter-spacing: 0.4px;
+        }
+
+        /* ========================================================
+           2. 克制暗黑軍工按鍵 ＋ 物理級阻尼與水波紋回饋系統
+           ======================================================== */
+        @keyframes springRelease {
+            0% { transform: scale(0.965); }
+            55% { transform: scale(1.015); }
+            100% { transform: scale(1); }
+        }
+
+        button {
+            width: 100%;
+            padding: 15px 16px;
+            margin-bottom: 11px;
+            background: var(--surface-dark);
+            color: var(--text-main);
+            border: 1px solid var(--border-metal);
+            border-left: 4px solid var(--netrunner-cyan);
+            border-radius: 0;
+            clip-path: polygon(
+                0 0,
+                calc(100% - var(--cut-md)) 0,
+                100% var(--cut-md),
+                100% 100%,
+                var(--cut-sm) 100%,
+                0 calc(100% - var(--cut-sm))
+            );
+            font-family: 'Rajdhani', 'Noto Sans TC', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
             cursor: pointer;
-            background: var(--opt-bg); 
-            color: var(--text-dark);
-            box-shadow: 0 4px 0 var(--opt-shadow);
-            transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            line-height: 1.2;
+            line-height: 1.25;
+            position: relative;
+            overflow: hidden;
+            transform: scale(1);
+            transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.15s ease, border-color 0.15s ease, filter 0.15s ease;
         }
 
-        button:hover {
-            filter: brightness(0.99);
+        button:hover:not(:disabled) {
+            background: var(--surface-hover);
+            border-color: var(--border-bright);
         }
 
-        button:active:not(:disabled) { 
-            transform: translateY(3px); 
-            box-shadow: 0 1px 0 var(--opt-shadow); 
+        button.is-pressing:not(:disabled) {
+            transform: scale(0.965) !important;
+            filter: brightness(0.86);
+        }
+
+        button.is-releasing:not(:disabled) {
+            animation: springRelease 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
         button:disabled {
             cursor: default;
-            opacity: 0.95;
+            opacity: 0.94;
         }
 
-        /* 語意化 3D 按鈕變體 */
-        .btn-primary {
-            background: var(--primary) !important;
-            color: #FFFFFF !important;
-            border-color: var(--primary) !important;
-            box-shadow: 0 4px 0 var(--primary-shadow) !important;
+        @keyframes tactileRippleAnim {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0.45;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2.8);
+                opacity: 0;
+            }
         }
-        .btn-primary:active:not(:disabled) {
-            box-shadow: 0 1px 0 var(--primary-shadow) !important;
+        .tactile-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(0, 240, 255, 0.25) 60%, transparent 100%);
+            pointer-events: none;
+            z-index: 2;
+            animation: tactileRippleAnim 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
-        .btn-warning {
-            background: var(--warning) !important;
-            color: #FFFFFF !important;
-            border-color: var(--warning) !important;
-            box-shadow: 0 4px 0 var(--warning-shadow) !important;
+        .btn-primary,
+        .btn-dark {
+            background: linear-gradient(90deg, rgba(252, 238, 9, 0.12) 0%, #131720 45%) !important;
+            color: var(--cyber-yellow) !important;
+            border: 1px solid var(--cyber-yellow) !important;
+            border-left: 4px solid var(--cyber-yellow) !important;
+            box-shadow: 0 0 16px rgba(252, 238, 9, 0.14), inset 0 0 12px rgba(252, 238, 9, 0.06);
+            font-weight: 900;
         }
-        .btn-warning:active:not(:disabled) {
-            box-shadow: 0 1px 0 var(--warning-shadow) !important;
+        .btn-primary:hover:not(:disabled),
+        .btn-dark:hover:not(:disabled) {
+            background: linear-gradient(90deg, rgba(252, 238, 9, 0.2) 0%, #181E2B 55%) !important;
+            box-shadow: 0 0 22px rgba(252, 238, 9, 0.24), inset 0 0 14px rgba(252, 238, 9, 0.1);
         }
 
         .btn-success {
-            background: var(--success) !important;
-            color: #FFFFFF !important;
-            border-color: var(--success) !important;
-            box-shadow: 0 4px 0 var(--success-shadow) !important;
-        }
-        .btn-success:active:not(:disabled) {
-            box-shadow: 0 1px 0 var(--success-shadow) !important;
+            background: linear-gradient(90deg, rgba(0, 240, 255, 0.12) 0%, #131720 45%) !important;
+            color: var(--netrunner-cyan) !important;
+            border: 1px solid var(--netrunner-cyan) !important;
+            border-left: 4px solid var(--netrunner-cyan) !important;
+            box-shadow: 0 0 16px rgba(0, 240, 255, 0.14), inset 0 0 12px rgba(0, 240, 255, 0.06);
+            font-weight: 900;
         }
 
+        .btn-warning,
         .btn-danger {
-            background: var(--danger) !important;
-            color: #FFFFFF !important;
-            border-color: var(--danger) !important;
-            box-shadow: 0 4px 0 var(--danger-shadow) !important;
-        }
-        .btn-danger:active:not(:disabled) {
-            box-shadow: 0 1px 0 var(--danger-shadow) !important;
-        }
-
-        .btn-dark {
-            background: var(--text-dark) !important;
-            color: #FFFFFF !important;
-            border-color: var(--text-dark) !important;
-            box-shadow: 0 4px 0 #0F172A !important;
-        }
-        .btn-dark:active:not(:disabled) {
-            box-shadow: 0 1px 0 #0F172A !important;
+            background: linear-gradient(90deg, rgba(255, 42, 84, 0.14) 0%, #131720 45%) !important;
+            color: var(--arasaka-red) !important;
+            border: 1px solid var(--arasaka-red) !important;
+            border-left: 4px solid var(--arasaka-red) !important;
+            box-shadow: 0 0 14px rgba(255, 42, 84, 0.14);
+            font-weight: 900;
         }
 
         .btn-outline-primary {
-            background: #FFFFFF !important;
-            color: var(--primary) !important;
-            border: 2px solid var(--primary) !important;
-            box-shadow: 0 4px 0 var(--primary-shadow) !important;
-        }
-        .btn-outline-primary:active:not(:disabled) {
-            box-shadow: 0 1px 0 var(--primary-shadow) !important;
+            border-left: 4px solid var(--netrunner-cyan) !important;
+            color: var(--text-main) !important;
         }
 
         .btn-outline-success {
-            background: #FFFFFF !important;
-            color: var(--success) !important;
-            border: 2px solid var(--success) !important;
-            box-shadow: 0 4px 0 var(--success-shadow) !important;
-        }
-        .btn-outline-success:active:not(:disabled) {
-            box-shadow: 0 1px 0 var(--success-shadow) !important;
+            border-left: 4px solid var(--cyber-yellow) !important;
+            color: var(--text-main) !important;
         }
 
         .btn-ghost {
             background: transparent !important;
-            border: 2px solid transparent !important;
-            box-shadow: none !important;
+            border: 1px solid transparent !important;
+            border-left: 1px solid transparent !important;
             color: var(--text-muted) !important;
         }
-        .btn-ghost:active:not(:disabled) {
-            transform: translateY(1px);
-            background: var(--opt-bg) !important;
+        .btn-ghost:hover:not(:disabled) {
+            color: var(--text-main) !important;
+            background: rgba(255, 255, 255, 0.03) !important;
         }
 
-        /* 測驗選項與題庫選擇按鈕 */
+        @keyframes abortPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 42, 84, 0.45); }
+            50% { box-shadow: 0 0 20px rgba(255, 42, 84, 0.85); }
+        }
+        .btn-abort-armed {
+            background: rgba(255, 42, 84, 0.22) !important;
+            color: #FFFFFF !important;
+            border: 1px solid var(--arasaka-red) !important;
+            border-left: 4px solid var(--cyber-yellow) !important;
+            font-weight: 900 !important;
+            animation: abortPulse 0.65s infinite;
+        }
+
+        /* ========================================================
+           3. 選項按鈕（純淨答案文字 + 狀態點，無前方編號）
+           ======================================================== */
+        .option-item-wrap,
+        .action-burst-wrap {
+            position: relative;
+            margin-bottom: 10px;
+            overflow: visible;
+        }
+        .option-item-wrap .option-btn,
+        .action-burst-wrap > button {
+            margin-bottom: 0;
+        }
+
         .option-btn {
-            background: var(--opt-bg);
-            border: 2px solid var(--opt-border);
-            box-shadow: 0 4px 0 var(--opt-shadow);
-            color: var(--text-dark);
-            padding: 18px 16px;
+            background: var(--surface-dark);
+            border: 1px solid var(--border-metal);
+            border-left: 4px solid var(--netrunner-cyan);
+            color: var(--text-main);
+            padding: 15px 16px;
+            justify-content: space-between;
+            text-align: left;
+            overflow: hidden;
         }
-        .option-btn.correct { 
-            background: var(--success) !important; 
-            color: white !important; 
-            border-color: var(--success) !important;
-            box-shadow: 0 4px 0 var(--success-shadow) !important;
-        }
-        .option-btn.wrong { 
-            background: var(--danger) !important; 
-            color: white !important; 
-            border-color: var(--danger) !important;
-            box-shadow: 0 4px 0 var(--danger-shadow) !important;
+        .option-btn:nth-child(even) {
+            border-left-color: var(--cyber-yellow);
         }
 
-        /* 選項遮蓋層（學院風毛玻璃質感） */
+        .opt-label-text {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+            word-break: break-word;
+            line-height: 1.3;
+            flex: 1;
+            pointer-events: none;
+        }
+
+        .opt-status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--border-bright);
+            flex-shrink: 0;
+            margin-left: 10px;
+            pointer-events: none;
+            transition: background-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        /* 答對 4 層疊加爆發特效 */
+        @keyframes circuitOverload {
+            0% {
+                background: #FFFFFF;
+                color: var(--cyber-black);
+                border-color: #FFFFFF;
+                transform: scale(1.03);
+            }
+            18% {
+                background: #FFFFFF;
+                color: var(--cyber-black);
+                border-color: #FFFFFF;
+                transform: scale(1.03);
+            }
+            38% {
+                background: var(--netrunner-cyan);
+                color: var(--cyber-black);
+                border-color: var(--netrunner-cyan);
+                transform: scale(1);
+            }
+            100% {
+                background: var(--netrunner-cyan);
+                color: var(--cyber-black);
+                border-color: var(--netrunner-cyan);
+                transform: scale(1);
+            }
+        }
+
+        @keyframes lightBeamSweep {
+            0% { left: -65%; opacity: 0; }
+            15% { opacity: 1; }
+            100% { left: 135%; opacity: 0.9; }
+        }
+
+        .option-btn.correct,
+        .btn-input-correct {
+            animation: circuitOverload 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+            font-weight: 900 !important;
+            box-shadow: 0 0 18px rgba(0, 240, 255, 0.7), 2px 0 rgba(252, 238, 9, 0.65), -2px 0 rgba(0, 240, 255, 0.75) !important;
+        }
+        .option-btn.correct .opt-label-text {
+            color: var(--cyber-black) !important;
+            font-weight: 900 !important;
+        }
+        .option-btn.correct .opt-status-dot {
+            background: var(--cyber-black) !important;
+        }
+
+        .option-btn.correct::after,
+        .btn-input-correct::after {
+            content: "";
+            position: absolute;
+            top: -30%;
+            left: -65%;
+            width: 45%;
+            height: 160%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent);
+            transform: rotate(45deg);
+            pointer-events: none;
+            animation: lightBeamSweep 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes shockwaveRingBurst {
+            0% {
+                opacity: 1;
+                transform: scale(1, 1);
+                border-color: #FFFFFF;
+                box-shadow: 0 0 14px var(--netrunner-cyan), inset 0 0 8px var(--cyber-yellow);
+            }
+            35% {
+                border-color: var(--netrunner-cyan);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.08, 1.35);
+                border-color: var(--netrunner-cyan);
+                box-shadow: 0 0 26px rgba(0, 240, 255, 0);
+            }
+        }
+
+        .cyber-shockwave {
+            position: absolute;
+            inset: 0;
+            border: 2px solid var(--netrunner-cyan);
+            outline: 1px solid var(--cyber-yellow);
+            outline-offset: 3px;
+            clip-path: polygon(
+                0 0,
+                calc(100% - var(--cut-md)) 0,
+                100% var(--cut-md),
+                100% 100%,
+                var(--cut-sm) 100%,
+                0 calc(100% - var(--cut-sm))
+            );
+            pointer-events: none;
+            z-index: 8;
+            animation: shockwaveRingBurst 0.4s ease-out forwards;
+        }
+
+        @keyframes floatEnergyTag {
+            0% { opacity: 0; transform: translateY(6px) scale(0.85); }
+            20% { opacity: 1; transform: translateY(-4px) scale(1.05); }
+            80% { opacity: 1; transform: translateY(-22px) scale(1); }
+            100% { opacity: 0; transform: translateY(-30px) scale(0.95); }
+        }
+
+        .floating-sync-tag {
+            position: absolute;
+            top: -14px;
+            right: 10px;
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            padding: 3px 8px;
+            background: var(--cyber-black);
+            color: var(--cyber-yellow);
+            border: 1px solid var(--netrunner-cyan);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.55);
+            pointer-events: none;
+            z-index: 25;
+            white-space: nowrap;
+            animation: floatEnergyTag 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes cyberShardFly {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) rotate(0deg) scale(1.15);
+            }
+            70% {
+                opacity: 0.9;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scale(0.2);
+            }
+        }
+
+        .cyber-data-shard {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
+            animation: cyberShardFly 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes rgbGlitchText {
+            0% { text-shadow: 2px 0 var(--arasaka-red), -2px 0 var(--netrunner-cyan); }
+            50% { text-shadow: -2px 0 var(--arasaka-red), 2px 0 var(--netrunner-cyan); }
+            100% { text-shadow: 1px 0 var(--arasaka-red), -1px 0 var(--netrunner-cyan); }
+        }
+
+        .option-btn.wrong {
+            background: rgba(255, 42, 84, 0.25) !important;
+            color: #FFFFFF !important;
+            border-color: var(--arasaka-red) !important;
+            border-left-color: var(--arasaka-red) !important;
+            animation: rgbGlitchText 0.22s infinite;
+        }
+        .option-btn.wrong .opt-status-dot {
+            background: var(--arasaka-red) !important;
+            box-shadow: 0 0 8px var(--arasaka-red);
+        }
+
+        /* ========================================================
+           4. 雙層慣性阻尼進度條 ＋ 整數倒數計時與能量衰減光條
+           ======================================================== */
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--surface-dark);
+            border: 1px solid var(--border-metal);
+            margin-bottom: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        #progress-ghost {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: rgba(255, 255, 255, 0.85);
+            transition: width 0.08s linear;
+            z-index: 1;
+        }
+        #progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--netrunner-cyan);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+            transition: width 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+            z-index: 2;
+        }
+
+        .quiz-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 28px;
+            margin-bottom: 8px;
+            gap: 10px;
+        }
+
+        #q-info {
+            font-family: 'Orbitron', 'Noto Sans TC', monospace;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-muted);
+            letter-spacing: 0.8px;
+        }
+
+        #timer-display {
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            font-weight: 900;
+            color: var(--netrunner-cyan);
+            background: var(--surface-dark);
+            padding: 3px 9px;
+            border: 1px solid var(--border-metal);
+            border-left: 3px solid var(--netrunner-cyan);
+            display: none;
+            align-items: center;
+            gap: 5px;
+            pointer-events: none;
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+        #timer-display.timer-warn {
+            color: var(--cyber-yellow);
+            border-left-color: var(--cyber-yellow);
+        }
+        @keyframes alarmBlink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.45; transform: scale(1.06); }
+        }
+        #timer-display.timer-urgent {
+            color: #FFFFFF;
+            background: rgba(255, 42, 84, 0.28);
+            border-color: var(--arasaka-red);
+            border-left-color: var(--arasaka-red);
+            animation: alarmBlink 0.42s infinite;
+        }
+
+        .quiz-word-container {
+            width: 100%;
+            margin: 4px 0 18px 0;
+            min-height: 128px;
+            padding: 34px 16px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: var(--surface-dark);
+            border: 1px solid var(--border-metal);
+            clip-path: polygon(
+                var(--cut-md) 0,
+                100% 0,
+                100% calc(100% - var(--cut-md)),
+                calc(100% - var(--cut-md)) 100%,
+                0 100%,
+                0 var(--cut-md)
+            );
+            position: relative;
+        }
+        .quiz-word-container.word-glitch {
+            border-color: var(--arasaka-red);
+            animation: rgbGlitchText 0.25s linear;
+        }
+
+        .depletion-bar-track {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(5, 6, 8, 0.9);
+            border-top: 1px solid rgba(38, 45, 61, 0.8);
+            display: none;
+            overflow: hidden;
+            z-index: 5;
+        }
+        #depletion-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: var(--netrunner-cyan);
+            box-shadow: 0 0 10px var(--netrunner-cyan);
+            transform-origin: left center;
+        }
+        #depletion-bar-fill.urgent-pulse {
+            animation: alarmBlink 0.42s infinite;
+        }
+
+        #combo-hud {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            display: none;
+            flex-direction: column;
+            align-items: flex-end;
+            text-align: right;
+            z-index: 6;
+            pointer-events: none;
+            transform-origin: right center;
+        }
+        .combo-main-badge {
+            font-family: 'Orbitron', monospace;
+            font-size: 13px;
+            font-weight: 900;
+            color: var(--cyber-yellow);
+            text-shadow: 0 0 10px rgba(252, 238, 9, 0.65);
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+        .combo-sub-label {
+            font-family: 'Orbitron', 'Noto Sans TC', monospace;
+            font-size: 8.5px;
+            font-weight: 700;
+            color: var(--netrunner-cyan);
+            letter-spacing: 0.6px;
+            margin-top: 2px;
+        }
+
+        @keyframes comboSpringImpact {
+            0% { transform: scale(2.0) rotate(-4deg); filter: brightness(1.6); }
+            65% { transform: scale(0.92) rotate(1deg); filter: brightness(1.1); }
+            100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+        }
+        #combo-hud.combo-pop {
+            animation: comboSpringImpact 0.36s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .quiz-word {
+            font-family: 'Orbitron', 'Rajdhani', 'Noto Sans TC', sans-serif;
+            font-size: 36px;
+            color: var(--text-main);
+            font-weight: 900;
+            line-height: 1.25;
+            max-width: 100%;
+            letter-spacing: 0.5px;
+        }
+
+        .scaffold-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 20px;
+            color: var(--cyber-yellow);
+            letter-spacing: 3px;
+            font-weight: 900;
+            margin-top: 10px;
+        }
+
+        /* ========================================================
+           5. 數據加密鎖遮罩（100% 不透明實心阻擋）
+           ======================================================== */
         .options-wrapper {
             position: relative;
         }
+        #q-options-container.options-hidden {
+            visibility: hidden;
+        }
         .options-mask {
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
-            background: rgba(248, 250, 252, 0.92); 
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            border-radius: 18px; 
-            display: none; 
+            opacity: 1;
+            background-color: #0B0D14;
+            background-image: repeating-linear-gradient(
+                -45deg,
+                #0D1018 0px,
+                #0D1018 12px,
+                #181D2B 12px,
+                #181D2B 24px
+            );
+            clip-path: polygon(
+                var(--cut-md) 0,
+                100% 0,
+                100% calc(100% - var(--cut-md)),
+                calc(100% - var(--cut-md)) 100%,
+                0 100%,
+                0 var(--cut-md)
+            );
+            display: none;
             flex-direction: column;
-            align-items: center; 
+            align-items: center;
             justify-content: center;
             gap: 10px;
-            font-size: 17px; 
-            font-weight: 900; 
-            color: var(--primary); 
-            z-index: 5; 
-            border: 2px dashed var(--primary);
-            box-shadow: inset 0 0 20px rgba(30, 58, 138, 0.04);
-            cursor: pointer; 
+            font-family: 'Orbitron', 'Noto Sans TC', sans-serif;
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--cyber-yellow);
+            z-index: 20;
+            border: 1px solid var(--arasaka-red);
+            border-left: 4px solid var(--arasaka-red);
+            cursor: pointer;
             user-select: none;
-            transition: transform 0.1s ease, background-color 0.15s ease;
         }
         .options-mask:active {
             transform: scale(0.99);
-            background: rgba(239, 246, 255, 0.95);
+        }
+        @keyframes decryptFlash {
+            0% { opacity: 1; background: #00F0FF; }
+            50% { opacity: 0.7; background: #FCEE09; }
+            100% { opacity: 0; }
+        }
+        .options-mask.decrypting {
+            animation: decryptFlash 0.14s linear forwards;
+            pointer-events: none;
         }
         .mask-badge {
-            background: var(--primary);
-            color: #FFFFFF;
-            padding: 10px 18px;
-            border-radius: 99px;
+            background: var(--surface-dark);
+            color: var(--cyber-yellow);
+            border: 1px solid var(--cyber-yellow);
+            padding: 9px 16px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 0 var(--primary-shadow);
-            font-size: 16px;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 0.8px;
         }
 
-        /* 題庫選擇高亮狀態 */
+        /* ========================================================
+           6. 結算畫面「神經同步率動態儀表板 (Neural Sync Diagnostic)」
+           ======================================================== */
+        .sync-diagnostic-box {
+            background: var(--surface-dark);
+            border: 1px solid var(--border-metal);
+            border-left: 4px solid var(--netrunner-cyan);
+            padding: 20px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .sync-gauge-wrap {
+            position: relative;
+            width: 156px;
+            height: 156px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .sync-gauge-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .sync-gauge-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .sync-rate-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--netrunner-cyan);
+            line-height: 1;
+        }
+
+        .sync-rate-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .hacker-rank-badge {
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 1.2px;
+            padding: 6px 14px;
+            border: 1px solid var(--cyber-yellow);
+            background: rgba(252, 238, 9, 0.08);
+            color: var(--cyber-yellow);
+            margin-bottom: 14px;
+            text-align: center;
+        }
+        .hacker-rank-badge.rank-s {
+            border-color: var(--cyber-yellow);
+            color: var(--cyber-yellow);
+            background: rgba(252, 238, 9, 0.12);
+            box-shadow: 0 0 14px rgba(252, 238, 9, 0.22);
+        }
+        .hacker-rank-badge.rank-a {
+            border-color: var(--netrunner-cyan);
+            color: var(--netrunner-cyan);
+            background: rgba(0, 240, 255, 0.1);
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.18);
+        }
+        .hacker-rank-badge.rank-c {
+            border-color: var(--arasaka-red);
+            color: var(--arasaka-red);
+            background: rgba(255, 42, 84, 0.1);
+        }
+
+        .sync-metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+        .metric-cell {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-metal);
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* ========================================================
+           7. 輸入框、記憶晶片清單與其他通用元件
+           ======================================================== */
         .db-sel-btn {
             justify-content: flex-start;
             text-align: left;
-            padding: 16px 20px;
+            padding: 14px 16px;
         }
         .db-sel-btn.selected-db {
-            background: var(--primary-light) !important;
-            border: 2px solid var(--primary) !important;
-            box-shadow: 0 4px 0 var(--primary-shadow) !important;
-            color: var(--primary) !important;
+            background: linear-gradient(90deg, rgba(252, 238, 9, 0.14) 0%, var(--surface-dark) 50%) !important;
+            border: 1px solid var(--cyber-yellow) !important;
+            border-left: 4px solid var(--cyber-yellow) !important;
+            color: var(--cyber-yellow) !important;
         }
 
-        /* 輸入框樣式 */
-        input, textarea { 
-            width: 100%; 
-            padding: 14px 16px; 
-            margin-bottom: 16px; 
-            border: 2px solid var(--opt-border); 
-            border-radius: 16px; 
-            font-family: inherit;
-            font-size: 18px; 
-            font-weight: 700; 
-            background: var(--opt-bg); 
-            color: var(--text-dark);
-            box-shadow: inset 0 2px 4px rgba(30, 41, 59, 0.03);
+        input, textarea {
+            width: 100%;
+            padding: 13px 14px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-metal);
+            border-left: 3px solid var(--border-bright);
+            border-radius: 0;
+            font-family: 'Rajdhani', 'Noto Sans TC', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            background: var(--surface-dark);
+            color: var(--text-main);
             transition: border-color 0.15s ease, background-color 0.15s ease;
         }
         input:focus, textarea:focus {
             outline: none;
-            border-color: var(--primary);
-            background: #FFFFFF;
+            border-color: var(--netrunner-cyan);
+            border-left-color: var(--netrunner-cyan);
+            background: var(--surface-hover);
         }
 
-        /* 質感計時器：下移至進度條下方，採用膠囊立體設計 */
-        #timer-display {
-            position: absolute; 
-            top: 56px; 
-            right: 24px; 
-            font-family: 'Fredoka', 'Nunito', sans-serif;
-            font-size: 16px; 
-            font-weight: 800;
-            color: #B45309; 
-            background: var(--warning-light); 
-            padding: 5px 12px; 
-            border-radius: 99px;
-            border: 2px solid var(--warning); 
-            box-shadow: 0 3px 0 var(--warning-shadow);
-            display: none; 
-            align-items: center;
-            gap: 5px;
-            pointer-events: none; 
-            z-index: 10;
-            transition: all 0.2s ease;
-        }
-        #timer-display.timer-urgent {
-            color: var(--danger);
-            background: var(--danger-light);
-            border-color: var(--danger);
-            box-shadow: 0 3px 0 var(--danger-shadow);
-            animation: pulseUrgent 0.6s infinite alternate;
-        }
-        @keyframes pulseUrgent {
-            from { transform: scale(1); }
-            to { transform: scale(1.06); }
-        }
-
-        /* 題目頂部資訊列（與計時器平齊且預留空間） */
-        .quiz-header-row {
+        .item {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            min-height: 34px;
-            margin-bottom: 10px;
-            position: relative;
-        }
-
-        /* 題目展示區 */
-        .quiz-word-container {
-            width: 100%; 
-            margin: 12px 0 24px 0; 
-            min-height: 110px; 
-            padding: 20px 16px;
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center; 
-            text-align: center; 
-            background: var(--opt-bg); 
-            border: 2px solid var(--opt-border);
-            border-radius: 20px;
-            box-shadow: inset 0 2px 6px rgba(30, 41, 59, 0.03);
-        }
-        .quiz-word { 
-            font-size: 40px; 
-            color: var(--primary); 
-            font-weight: 900; 
-            word-break: break-all; 
-            line-height: 1.2;
-        }
-        .scaffold-text { 
-            font-size: 24px; 
-            color: var(--warning); 
-            letter-spacing: 4px; 
-            font-weight: 900; 
-            margin-top: 8px; 
-        }
-
-        /* 進度條 (Duolingo 風格圓潤高光) */
-        .progress-bar { 
-            width: 100%; 
-            height: 16px; 
-            background: var(--opt-border); 
-            border-radius: 99px; 
-            margin-bottom: 14px; 
-            overflow: hidden; 
-            padding: 3px;
-        }
-        #progress-fill { 
-            height: 100%; 
-            background: var(--success); 
-            width: 0%; 
-            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1); 
-            border-radius: 99px;
-            position: relative;
-        }
-        #progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 6px;
-            right: 6px;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.35);
-            border-radius: 99px;
-        }
-
-        /* 列表項目與卡片 */
-        .item { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 12px 10px; 
-            border-bottom: 2px solid var(--opt-border); 
-            gap: 10px; 
+            padding: 9px 6px;
+            border-bottom: 1px solid var(--border-metal);
+            gap: 8px;
         }
         .item:last-child {
             border-bottom: none;
         }
-        .word-clickable { 
-            flex: 1; 
-            cursor: pointer; 
-            padding: 10px 14px; 
-            border-radius: 14px; 
-            background: var(--opt-bg); 
-            border: 2px solid var(--opt-border); 
-            box-shadow: 0 3px 0 var(--opt-shadow);
-            min-width: 0; 
-            transition: transform 0.08s ease, box-shadow 0.08s ease;
+        .word-clickable {
+            flex: 1;
+            cursor: pointer;
+            padding: 9px 12px;
+            background: var(--surface-dark);
+            border: 1px solid var(--border-metal);
+            border-left: 3px solid var(--netrunner-cyan);
+            min-width: 0;
+            transition: background-color 0.12s ease;
         }
         .word-clickable:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 var(--opt-shadow);
-            background: var(--edit-bg);
+            background: rgba(252, 238, 9, 0.12);
         }
-        .word-text { 
-            font-weight: 800; 
-            font-size: 18px; 
-            color: var(--text-dark);
-            display: block; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
+        .word-text {
+            font-weight: 800;
+            font-size: 17px;
+            color: var(--text-main);
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        
-        /* 選取模式樣式調整 */
-        .batch-checkbox { 
-            width: 24px; 
-            height: 24px; 
-            margin-right: 6px; 
+
+        .batch-checkbox {
+            width: 22px;
+            height: 22px;
+            margin-right: 4px;
             margin-bottom: 0;
-            cursor: pointer; 
-            display: none; 
-            flex-shrink: 0; 
-            accent-color: var(--primary);
+            cursor: pointer;
+            display: none;
+            flex-shrink: 0;
+            accent-color: var(--cyber-yellow);
         }
-        .selecting { background: var(--warning-light); border-radius: 14px; }
+        .selecting { background: rgba(252, 238, 9, 0.06); }
         .selecting .batch-checkbox { display: block; }
-        .selecting .btn-del { display: none; } 
-        .selecting .stat-group { display: flex; } 
+        .selecting .btn-del { display: none; }
+        .selecting .stat-group { display: flex; }
 
-        .stat-group { display: flex; gap: 6px; flex-shrink: 0; }
-        .stat-box { 
-            width: 40px; 
-            height: 40px; 
-            border-radius: 12px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 11px; 
-            font-weight: 900; 
-            color: white; 
+        .stat-group { display: flex; gap: 5px; flex-shrink: 0; }
+        .stat-box {
+            width: 42px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            font-weight: 900;
         }
-        .stat-choice { background-color: var(--primary); box-shadow: 0 3px 0 var(--primary-shadow); }
-        .stat-input { background-color: var(--success); box-shadow: 0 3px 0 var(--success-shadow); }
-        
-        .legend { 
-            font-size: 13px; 
-            background: var(--opt-bg); 
-            padding: 10px 12px; 
-            border-radius: 14px; 
-            margin-bottom: 16px; 
-            display: flex; 
-            justify-content: space-around; 
-            border: 2px solid var(--opt-border); 
+        .stat-choice {
+            background-color: rgba(0, 240, 255, 0.1);
+            color: var(--netrunner-cyan);
+            border: 1px solid rgba(0, 240, 255, 0.35);
         }
-        .legend-item { display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--text-dark); }
+        .stat-input {
+            background-color: rgba(252, 238, 9, 0.1);
+            color: var(--cyber-yellow);
+            border: 1px solid rgba(252, 238, 9, 0.35);
+        }
 
-        .btn-del { 
-            width: 42px; 
-            height: 42px; 
-            padding: 0; 
-            font-size: 15px; 
-            margin-bottom: 0; 
-            background: var(--danger); 
-            color: white; 
-            border: 2px solid var(--danger); 
-            box-shadow: 0 3px 0 var(--danger-shadow);
-            flex-shrink: 0; 
-            border-radius: 12px; 
+        .legend {
+            font-size: 12px;
+            background: var(--surface-dark);
+            padding: 8px 12px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-around;
+            border: 1px solid var(--border-metal);
         }
-        .btn-del:active:not(:disabled) {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 var(--danger-shadow);
+        .legend-item { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--text-main); }
+
+        .btn-del {
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            font-size: 14px;
+            margin-bottom: 0;
+            background: var(--surface-dark);
+            color: var(--arasaka-red);
+            border: 1px solid var(--arasaka-red);
+            border-left: 3px solid var(--arasaka-red);
+            clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+            flex-shrink: 0;
         }
         .btn-rename {
-            background: #64748B !important;
-            border-color: #64748B !important;
-            box-shadow: 0 3px 0 #475569 !important;
+            color: var(--netrunner-cyan) !important;
+            border-color: var(--border-metal) !important;
+            border-left-color: var(--netrunner-cyan) !important;
         }
-        .btn-rename:active:not(:disabled) {
-            box-shadow: 0 1px 0 #475569 !important;
+        .btn-del.armed-del {
+            width: auto !important;
+            padding: 0 10px !important;
+            background: rgba(255, 42, 84, 0.25) !important;
+            color: #FFFFFF !important;
+            border-color: var(--cyber-yellow) !important;
+            font-size: 12px !important;
+            font-weight: 900 !important;
         }
-        
-        #wrong-confirm-box { 
-            display: none; 
-            background: var(--danger-light); 
-            border: 2px solid var(--danger); 
-            padding: 18px; 
-            border-radius: 18px; 
-            margin-bottom: 16px; 
-            text-align: center; 
-            box-shadow: 0 4px 0 var(--danger-shadow);
+
+        .inline-rename-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
         }
-        .stat-card { 
-            background: var(--opt-bg); 
-            padding: 20px; 
-            border-radius: 20px; 
-            margin-bottom: 20px; 
-            border: 2px solid var(--opt-border); 
-            box-shadow: 0 4px 0 var(--opt-shadow);
+        .inline-rename-input {
+            margin-bottom: 0 !important;
+            padding: 7px 10px !important;
+            font-size: 15px !important;
+            border-color: var(--cyber-yellow) !important;
+            background: var(--cyber-black) !important;
         }
-        .stat-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 18px; font-weight: 800; }
-        .stat-row:last-child { margin-bottom: 0; }
-        .wrong-list-area { 
-            background: #FFFFFF; 
-            border: 2px solid var(--danger); 
-            padding: 14px; 
-            border-radius: 16px; 
-            max-height: 200px; 
-            overflow-y: auto; 
-            font-family: monospace; 
-            font-size: 16px; 
+        .btn-mini-ok {
+            width: auto !important;
+            padding: 7px 10px !important;
+            margin-bottom: 0 !important;
+            font-size: 13px !important;
+            color: var(--netrunner-cyan) !important;
+            border-color: var(--netrunner-cyan) !important;
+            font-weight: 900 !important;
+        }
+        .btn-mini-cancel {
+            width: auto !important;
+            padding: 7px 9px !important;
+            margin-bottom: 0 !important;
+            font-size: 13px !important;
+        }
+
+        #wrong-confirm-box {
+            display: none;
+            background: rgba(255, 42, 84, 0.08);
+            border: 1px solid var(--arasaka-red);
+            border-left: 4px solid var(--arasaka-red);
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .wrong-list-area {
+            background: var(--cyber-black);
+            border: 1px solid var(--arasaka-red);
+            border-left: 3px solid var(--arasaka-red);
+            padding: 12px;
+            max-height: 180px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
             font-weight: 700;
-            white-space: pre-wrap; 
-            color: var(--text-dark);
+            white-space: pre-wrap;
+            color: var(--text-main);
         }
-        
-        .help-content { line-height: 1.7; font-size: 15px; text-align: left; margin-bottom: 20px; color: var(--text-dark); }
+
+        .help-content { line-height: 1.7; font-size: 15px; text-align: left; margin-bottom: 20px; color: var(--text-main); }
         .help-content h3 {
-            color: var(--primary); 
-            border-left: 4px solid var(--warning); 
+            color: var(--netrunner-cyan);
+            border-left: 3px solid var(--cyber-yellow);
             padding-left: 10px;
             font-weight: 900;
         }
         .help-content code {
-            background: var(--opt-border);
+            background: var(--surface-dark);
+            color: var(--cyber-yellow);
             padding: 2px 6px;
-            border-radius: 6px;
-            font-weight: 800;
+            border: 1px solid var(--border-metal);
+            font-weight: 700;
+        }
+
+        /* 頂部 HUD 非阻塞訊息橫幅 */
+        #hud-toast-banner {
+            position: fixed;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-130%);
+            width: calc(100% - 30px);
+            max-width: 470px;
+            background: var(--cyber-black);
+            color: var(--netrunner-cyan);
+            border: 1px solid var(--netrunner-cyan);
+            border-left: 4px solid var(--cyber-yellow);
+            padding: 11px 15px;
+            font-family: 'Rajdhani', 'Noto Sans TC', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.45;
+            white-space: pre-line;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 0;
+            transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+        }
+        #hud-toast-banner.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        #hud-toast-banner.toast-warn {
+            color: var(--cyber-yellow);
+            border-color: var(--arasaka-red);
+            border-left-color: var(--arasaka-red);
         }
 
         .svg-icon {
-            width: 22px;
-            height: 22px;
+            width: 19px;
+            height: 19px;
             flex-shrink: 0;
             vertical-align: middle;
         }
@@ -595,308 +1267,770 @@
 </head>
 <body>
 
-<div class="container">
-    <!-- 質感膠囊計時器 (位於進度條下方) -->
-    <div id="timer-display">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="13" r="8"></circle>
-            <path d="M12 9v4l2 2"></path>
-            <path d="M9 3h6"></path>
-        </svg>
-        <span id="timer-sec">0</span>s
-    </div>
+<!-- SVG feTurbulence 細微顆粒雜訊紋理層 -->
+<svg class="noise-overlay" xmlns="http://www.w3.org/2000/svg">
+    <filter id="cyber-noise-filter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="3" stitchTiles="stitch"/>
+        <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#cyber-noise-filter)"/>
+</svg>
 
-    <div id="p-main" class="page active">
-        <h2 class="brand-header">
-            <!-- 手繪學院風惡魔吉祥物 SVG -->
-            <svg width="42" height="42" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 24C12 18 10 10 16 8C20 12 22 18 24 20" fill="#F59E0B" stroke="#1E293B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M46 24C52 18 54 10 48 8C44 12 42 18 40 20" fill="#F59E0B" stroke="#1E293B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <rect x="14" y="18" width="36" height="34" rx="17" fill="#1E3A8A" stroke="#1E293B" stroke-width="3.5"/>
-                <path d="M32 6L48 13L32 20L16 13L32 6Z" fill="#1E293B" stroke="#1E293B" stroke-width="2.5" stroke-linejoin="round"/>
-                <path d="M44 15V25" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
-                <circle cx="44" cy="26" r="2.5" fill="#F59E0B"/>
-                <circle cx="25" cy="33" r="4" fill="#FFFFFF"/>
-                <circle cx="25" cy="33" r="2" fill="#1E293B"/>
-                <circle cx="39" cy="33" r="4" fill="#FFFFFF"/>
-                <circle cx="39" cy="33" r="2" fill="#1E293B"/>
-                <path d="M25 42C27.5 45 36.5 45 39 42" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
-                <path d="M27 43L28.5 46L30 43.5" fill="#FFFFFF"/>
-                <path d="M34 43.5L35.5 46L37 43" fill="#FFFFFF"/>
-            </svg>
-            all in one
-        </h2>
-        <button class="btn-primary" style="padding: 20px; font-size: 20px;" onclick="go('p-mode')">
-            <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            開始遊戲
-        </button>
-        <button onclick="go('p-mgr')">
-            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            題庫管理 / 備份
-        </button>
-        <button class="btn-warning" onclick="go('p-help')">
-            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-            遊戲功能說明
-        </button>
-    </div>
+<div id="hud-toast-banner" role="status" aria-live="polite"></div>
 
-   <div id="p-help" class="page">
-        <h2 style="font-size: 24px;">
-            <svg class="svg-icon" style="color:var(--primary); width:26px; height:26px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-            深度使用指南與設計邏輯
-        </h2>
-        <div class="help-content">
-            
-            <p>本工具不僅是測驗機，更是基於<b>認知心理學</b>設計的記憶強化系統。以下是各項核心功能的詳細解析：</p>
-
-            <section style="margin-bottom: 20px;">
-                <h3>1. 結構化題庫管理 (Structured Organization)</h3>
-                <p><b>具體操作：</b>在「題庫管理」中建立不同名稱的資料夾（如：TOEIC 單字、課本 L1）。</p>
-                <p><b>設計初衷：</b>人類大腦對於有規律、有分類的資訊吸收最快。透過分類，您可以縮小單次學習的範疇，建立大腦的「索引標籤」，避免資訊過載產生的混淆。</p>
-            </section>
-
-            <section style="margin-bottom: 20px;">
-                <h3>2. 智慧化錄入系統 (Smart Entry)</h3>
-                <p><b>具體操作：</b>單筆新增適合零星補充；「批次匯入」則支援 <code>英文 中文</code> 格式的文字直接貼上。</p>
-                <p><b>設計初衷：</b>錄入資料不應成為學習的阻礙。批次功能是為了讓您將外部教材（如 PDF、網頁單字表）快速轉化為數位練習題，將寶貴的精力集中在「記憶」而非「打字」。</p>
-            </section>
-
-            <section style="margin-bottom: 20px;">
-                <h3>3. 階梯式測驗模式 (Scaffolded Testing)</h3>
-                <p><b>具體操作：</b>先進行「英翻中選擇」熟悉單字形象，再進行「中翻英填充」挑戰拼寫。</p>
-                <p><b>設計初衷：</b>遵循「由淺入深」的學習曲線。選擇題練習的是<b>「再認記憶」</b>（Recognition），而填充題則是難度最高的<b>「回憶記憶」</b>（Recall）。兩者並行能確保從看到單字有印象，進步到能完整運用。</p>
-            </section>
-
-            <section style="margin-bottom: 20px;">
-                <h3>4. 答對率排序邏輯 (Data-Driven Priority)</h3>
-                <p><b>具體操作：</b>編輯列表會動態將答對率最低的單字置頂，並以藍色與綠色方塊標示熟練度。</p>
-                <p><b>設計初衷：</b>落實「精準練習」。大多數人傾向重複練習已經會的單字，這會造成效率低下。系統強制將您的「弱點」推至眼前，讓每一分鐘的複習都發揮最大價值。</p>
-            </section>
-
-            <section style="margin-bottom: 20px;">
-                <h3>5. 自定義難度與鷹架提示 (Adaptive Difficulty)</h3>
-                <p><b>具體操作：</b>測驗前可設定「計時秒數」增加難度，或勾選「首尾提示」降低挫折感。</p>
-                <p><b>設計初衷：</b>計時器是為了訓練<b>「自動化反應」</b>（不經思考就能反射單字意），模擬真實對話壓力。首尾提示則是學習心理學中的「鷹架功能」，在您差一點就想起來時給予關鍵助推。</p>
-            </section>
-
-            <section style="margin-bottom: 20px;">
-                <h3>6. 即時回饋與閉環複習 (Feedback Loop)</h3>
-                <p><b>具體操作：</b>答錯時立即彈出答案，測驗結束後提供「一鍵複製錯題」。</p>
-                <p><b>設計初衷：</b>大腦在犯錯的那一刻學習力最高。即時糾正能中斷錯誤的聯結；複製錯題功能則讓您可以將這份清單再次匯入新題庫，形成「練習→發現錯誤→專項複習」的完美閉環。</p>
-            </section>
-
-            <section style="margin-bottom: 20px;">
-                <h3>7. JSON 本地備份機制 (Data Portability)</h3>
-                <p><b>具體操作：</b>定期使用「匯出備份」下載檔案，或在換手機時使用「匯入」讀取舊資料。</p>
-                <p><b>設計初衷：</b>為了隱私，您的數據僅儲存在您自己的手機裡。但網頁緩存可能遺失，定期匯出 JSON 不僅是為了安全，更是讓您可以將自己辛苦累積的數位資產永久保存。</p>
-            </section>
-            <section style="margin-bottom: 20px;">
-                <h3>8. 開發者的話</h3>
-                <p>如您所見，這是一個由我與 AI 協作開發的網頁小遊戲。在所有功能中，我最推薦<b>「智慧批次匯入」</b>：只要您的文字格式維持「每行一個英文與對應中文」，系統即可自動解析並建檔。這意味著您可以將整頁單字交由 AI 快速整理後直接匯入，徹底告別手動逐字輸入的低效。
-軟體仍持續進化中，若您在使用過程中遇到任何異常，或有新的功能提案與優化建議，誠摯歡迎透過電子郵件與我聯繫：starsword0000@gmail.com</p>
-            </section>
-
+<div class="hud-outer-frame" id="hud-outer-frame">
+    <div class="container" id="main-hud-container">
+        <!-- 頂部即時跳動狀態列 + 音效開關 -->
+        <div class="hud-telemetry-bar">
+            <span class="telemetry-live" id="telemetry-text">MEM: 0x4F2A // NEURAL_LINK: STABLE</span>
+            <button type="button" id="audio-toggle-btn" title="切換合成音效">SFX</button>
         </div>
-        <button onclick="go('p-main')" class="btn-primary" style="margin-top: 10px;">我了解了，返回主選單</button>
-    </div>
 
-    <div id="p-mode" class="page">
-        <h2>請選擇遊戲模式</h2>
-        <button class="btn-outline-primary" onclick="setGameMode('choice')">
-            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
-            英翻中選擇
-        </button>
-        <button class="btn-outline-success" onclick="setGameMode('input')">
-            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-            中翻英填充
-        </button>
-        <button onclick="go('p-main')" style="margin-top: 10px; font-size: 15px;">返回主畫面</button>
-    </div>
-
-    <div id="p-sel" class="page">
-        <h2 id="sel-title-text">設定測驗</h2>
-        <div id="sel-list"></div>
-        <div id="quiz-config" style="display:none; margin-top:20px; border-top: 2px solid var(--opt-border); padding-top: 18px;">
-            <label>1. 測驗題數：</label>
-            <input type="number" id="quiz-num-input" min="1" inputmode="numeric">
-            <label>2. 每題時間 (秒)：</label>
-            <input type="number" id="quiz-time-input" min="0" inputmode="numeric" value="10">
-            <div id="config-choice-only" style="display:none; margin-bottom: 14px;">
-                <label style="display: flex; align-items: center; background: var(--opt-bg); padding: 14px; border-radius: 16px; border: 2px solid var(--opt-border); cursor: pointer;">
-                    <input type="checkbox" id="mask-toggle" style="width: 22px; height: 22px; margin-right: 12px; margin-bottom: 0; accent-color: var(--primary);"> 遮蓋選項（手動點擊揭曉）
-                </label>
-            </div>
-            <div id="config-input-only" style="display:none; margin-bottom: 14px;">
-                <label style="display: flex; align-items: center; background: var(--opt-bg); padding: 14px; border-radius: 16px; border: 2px solid var(--opt-border); cursor: pointer;">
-                    <input type="checkbox" id="hint-toggle" style="width: 22px; height: 22px; margin-right: 12px; margin-bottom: 0; accent-color: var(--primary);"> 開啟首尾提示
-                </label>
-            </div>
-            <p id="pool-info" style="font-size:14px; color:var(--text-muted); margin-top: 8px;"></p>
-            <button class="btn-success" onclick="startQuiz()">確認開始！</button>
-        </div>
-        <button onclick="go('p-mode')" style="margin-top:10px;">返回</button>
-    </div>
-
-    <div id="p-quiz" class="page">
-        <div class="progress-bar"><div id="progress-fill"></div></div>
-        <div class="quiz-header-row">
-            <div id="q-info" style="text-align:center; font-weight:900; font-size:17px; color: var(--text-muted);"></div>
-        </div>
-        <div class="quiz-word-container">
-            <div class="quiz-word" id="q-word-display"></div>
-            <div id="q-hint-display" class="scaffold-text" style="display:none;"></div>
-        </div>
-        <div id="ui-choice" style="display:none;">
-            <div class="options-wrapper">
-                <div id="q-options-mask" class="options-mask" onclick="revealOptions()">
-                    <div class="mask-badge">
-                        <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        點擊揭曉選項
-                    </div>
-                    <span style="font-size: 13px; color: var(--text-muted); font-weight: 700;">先在腦海中回想單字意思，再點擊打開</span>
+        <!-- 1. 主選單頁面 -->
+        <div id="p-main" class="page active">
+            <div class="radar-hero-header">
+                <svg width="56" height="56" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+                    <g class="radar-ring-outer">
+                        <circle cx="32" cy="32" r="28" stroke="#262D3D" stroke-width="1.5"/>
+                        <circle cx="32" cy="32" r="28" stroke="#00F0FF" stroke-width="2" stroke-dasharray="14 8 4 8"/>
+                        <line x1="32" y1="1" x2="32" y2="7" stroke="#FCEE09" stroke-width="2"/>
+                        <line x1="32" y1="57" x2="32" y2="63" stroke="#FCEE09" stroke-width="2"/>
+                        <line x1="1" y1="32" x2="7" y2="32" stroke="#FCEE09" stroke-width="2"/>
+                        <line x1="57" y1="32" x2="63" y2="32" stroke="#FCEE09" stroke-width="2"/>
+                    </g>
+                    <g class="radar-ring-inner">
+                        <circle cx="32" cy="32" r="20" stroke="#FF2A54" stroke-width="1.5" stroke-dasharray="10 6"/>
+                    </g>
+                    <rect class="wave-bar" x="21" y="25" width="2.5" height="14" fill="#00F0FF"/>
+                    <rect class="wave-bar" x="26" y="21" width="2.5" height="22" fill="#FCEE09"/>
+                    <rect class="wave-bar" x="30.75" y="18" width="2.5" height="28" fill="#00F0FF"/>
+                    <rect class="wave-bar" x="35.5" y="22" width="2.5" height="20" fill="#FCEE09"/>
+                    <rect class="wave-bar" x="40.5" y="26" width="2.5" height="12" fill="#FF2A54"/>
+                </svg>
+                <div class="brand-title-block">
+                    <span class="brand-sub-tag">MILITECH // TACTICAL_OS</span>
+                    <span class="brand-main-title">ALL IN ONE</span>
                 </div>
-                <div id="q-options-container"></div>
             </div>
-            <div id="choice-next-box" style="display:none; margin-top: 12px;">
-                <button onclick="nextQ()" class="btn-dark">
-                    確認並繼續
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                </button>
-            </div>
-        </div>
-        <div id="ui-input" style="display:none;">
-            <div id="wrong-confirm-box">
-                <div id="wrong-msg" style="margin-bottom: 12px; color: var(--text-dark);"></div>
-                <button onclick="nextQ(true)" class="btn-danger" style="margin-bottom: 0;">我知道了，下一題</button>
-            </div>
-            <div id="input-zone">
-                <input type="text" id="ans-in" autocomplete="off" spellcheck="false" placeholder="輸入答案">
-                <button onclick="checkInputAns()" class="btn-primary">送出</button>
-            </div>
-        </div>
-        <button onclick="if(confirm('結束測驗？')) go('p-main')" class="btn-ghost" style="margin-top:24px; font-size:15px;">結束遊戲</button>
-    </div>
 
-    <div id="p-result" class="page">
-        <h2>
-            <svg class="svg-icon" style="color:var(--warning); width:28px; height:28px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
-            測驗完成
-        </h2>
-        <div class="stat-card">
-            <div class="stat-row"><span>總題數：</span><span id="res-total">0</span></div>
-            <div class="stat-row"><span>答對數：</span><span id="res-correct" style="color:var(--success);">0</span></div>
-            <div class="stat-row"><span>答對率：</span><span id="res-rate">0%</span></div>
-        </div>
-        <div id="res-wrong-section" style="display:none; margin-bottom: 16px;">
-            <div id="res-wrong-list" class="wrong-list-area"></div>
-            <button onclick="copyWrongList()" style="margin-top:12px;">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                複製錯題
+            <button type="button" id="btn-nav-mode" class="btn-primary" style="padding: 18px; font-size: 19px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>
+                開始遊戲 // INITIATE
+            </button>
+            <button type="button" id="btn-nav-mgr">
+                <svg class="svg-icon" style="color:var(--netrunner-cyan);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="4" width="16" height="16"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/></svg>
+                題庫管理 / 備份
+            </button>
+            <button type="button" id="btn-nav-help" class="btn-warning">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                遊戲功能說明
             </button>
         </div>
-        <button onclick="go('p-main')" class="btn-primary">返回主選單</button>
-    </div>
 
-    <div id="p-mgr" class="page">
-        <h2>
-            <svg class="svg-icon" style="color:var(--primary); width:26px; height:26px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-            題庫管理
-        </h2>
-        <input type="text" id="db-in" placeholder="輸入新題庫名稱">
-        <button onclick="addDB()" class="btn-primary">建立新題庫</button>
-        <div id="db-list" style="margin-top: 10px;"></div>
-        <div style="margin-top:24px; padding: 16px; background: var(--opt-bg); border: 2px dashed var(--opt-shadow); border-radius: 18px; text-align:center;">
-            <button onclick="exportJSON()" style="font-size:15px; margin-bottom: 10px;">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                匯出備份 (.json)
+        <!-- 2. 遊戲功能說明頁面 -->
+        <div id="p-help" class="page">
+            <h2>
+                <svg class="svg-icon" style="color:var(--cyber-yellow);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/></svg>
+                深度使用指南與設計邏輯
+            </h2>
+            <div class="help-content">
+                <p>本工具不僅是測驗機，更是基於<b>認知心理學</b>設計的記憶強化系統。以下是各項核心功能的詳細解析：</p>
+
+                <section style="margin-bottom: 20px;">
+                    <h3>1. 結構化題庫管理 (Structured Organization)</h3>
+                    <p><b>具體操作：</b>在「題庫管理」中建立不同名稱的資料夾（如：TOEIC 單字、課本 L1）。</p>
+                    <p><b>設計初衷：</b>人類大腦對於有規律、有分類的資訊吸收最快。透過分類，您可以縮小單次學習的範疇，建立大腦的「索引標籤」，避免資訊過載產生的混淆。</p>
+                </section>
+
+                <section style="margin-bottom: 20px;">
+                    <h3>2. 智慧化錄入系統 (Smart Entry)</h3>
+                    <p><b>具體操作：</b>單筆新增適合零星補充；「批次匯入」則支援 <code>英文 中文</code> 格式的文字直接貼上。</p>
+                    <p><b>設計初衷：</b>錄入資料不應成為學習的阻礙。批次功能是為了讓您將外部教材（如 PDF、網頁單字表）快速轉化為數位練習題，將寶貴的精力集中在「記憶」而非「打字」。</p>
+                </section>
+
+                <section style="margin-bottom: 20px;">
+                    <h3>3. 階梯式測驗模式 (Scaffolded Testing)</h3>
+                    <p><b>具體操作：</b>先進行「英翻中選擇」熟悉單字形象，再進行「中翻英填充」挑戰拼寫。</p>
+                    <p><b>設計初衷：</b>遵循「由淺入深」的學習曲線。選擇題練習的是<b>「再認記憶」</b>（Recognition），而填充題則是難度最高的<b>「回憶記憶」</b>（Recall）。兩者並行能確保從看到單字有印象，進步到能完整運用。</p>
+                </section>
+
+                <section style="margin-bottom: 20px;">
+                    <h3>4. 答對率排序邏輯 (Data-Driven Priority)</h3>
+                    <p><b>具體操作：</b>編輯列表會動態將答對率最低的單字置頂，並以藍色與黃色方塊標示熟練度。</p>
+                    <p><b>設計初衷：</b>落實「精準練習」。大多數人傾向重複練習已經會的單字，這會造成效率低下。系統強制將您的「弱點」推至眼前，讓每一分鐘的複習都發揮最大價值。</p>
+                </section>
+
+                <section style="margin-bottom: 20px;">
+                    <h3>5. 自定義難度與鷹架提示 (Adaptive Difficulty)</h3>
+                    <p><b>具體操作：</b>測驗前可設定「計時秒數」增加難度，或勾選「首尾提示」降低挫折感。</p>
+                    <p><b>設計初衷：</b>計時器是為了訓練<b>「自動化反應」</b>（不經思考就能反射單字意），模擬真實對話壓力。首尾提示則是學習心理學中的「鷹架功能」，在您差一點就想起來時給予關鍵助推。</p>
+                </section>
+
+                <section style="margin-bottom: 20px;">
+                    <h3>6. 即時回饋與閉環複習 (Feedback Loop)</h3>
+                    <p><b>具體操作：</b>答錯時立即彈出答案，測驗結束後提供「一鍵複製錯題」。</p>
+                    <p><b>設計初衷：</b>大腦在犯錯的那一刻學習力最高。即時糾正能中斷錯誤的聯結；複製錯題功能則讓您可以將這份清單再次匯入新題庫，形成「練習→發現錯誤→專項複習」的完美閉環。</p>
+                </section>
+
+                <section style="margin-bottom: 20px;">
+                    <h3>7. JSON 本地備份機制 (Data Portability)</h3>
+                    <p><b>具體操作：</b>定期使用「匯出備份」下載檔案，或在換手機時使用「匯入」讀取舊資料。</p>
+                    <p><b>設計初衷：</b>為了隱私，您的數據僅儲存在您自己的手機裡。但網頁緩存可能遺失，定期匯出 JSON 不僅是為了安全，更是讓您可以將自己辛苦累積的數位資產永久保存。</p>
+                </section>
+
+                <section style="margin-bottom: 20px;">
+                    <h3>8. 開發者的話</h3>
+                    <p>如您所見，這是一個由我與 AI 協作開發的網頁小遊戲。在所有功能中，我最推薦<b>「智慧批次匯入」</b>：只要您的文字格式維持「每行一個英文與對應中文」，系統即可自動解析並建檔。這意味著您可以將整頁單字交由 AI 快速整理後直接匯入，徹底告別手動逐字輸入的低效。
+軟體仍持續進化中，若您在使用過程中遇到任何異常，或有新的功能提案與優化建議，誠摯歡迎透過電子郵件與我聯繫：starsword0000@gmail.com</p>
+                </section>
+            </div>
+            <button type="button" id="btn-help-back" class="btn-primary" style="margin-top: 10px;">我了解了，返回主選單</button>
+        </div>
+
+        <!-- 3. 遊戲模式選擇頁面 -->
+        <div id="p-mode" class="page">
+            <h2>請選擇遊戲模式</h2>
+            <button type="button" id="btn-mode-choice" class="btn-outline-primary">
+                <svg class="svg-icon" style="color:var(--netrunner-cyan);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                英翻中選擇 // RECOGNITION
             </button>
-            <input type="file" id="import-file" onchange="importJSON(event)" style="font-size:13px; margin-top:4px; margin-bottom:0; padding: 10px; background: #FFF;">
+            <button type="button" id="btn-mode-input" class="btn-outline-success">
+                <svg class="svg-icon" style="color:var(--cyber-yellow);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5l4 4L7 21H3v-4L16.5 3.5z"/></svg>
+                中翻英填充 // RECALL
+            </button>
+            <button type="button" id="btn-mode-back" style="margin-top: 10px; font-size: 15px; border-left-color: var(--border-bright);">返回主畫面</button>
         </div>
-        <button onclick="go('p-main')" style="margin-top: 16px;">返回</button>
-    </div>
 
-    <div id="p-edit" class="page">
-        <h2 id="edit-title">編輯中</h2>
-        <div class="legend">
-            <div class="legend-item"><div class="stat-box stat-choice" style="width:20px; height:20px; border-radius: 6px;"></div> 選擇題答對率</div>
-            <div class="legend-item"><div class="stat-box stat-input" style="width:20px; height:20px; border-radius: 6px;"></div> 填充題答對率</div>
+        <!-- 4. 測驗設定頁面 -->
+        <div id="p-sel" class="page">
+            <h2 id="sel-title-text">設定測驗</h2>
+            <div id="sel-list"></div>
+            <div id="quiz-config" style="display:none; margin-top:16px; border-top: 1px solid var(--border-metal); padding-top: 16px;">
+                <label for="quiz-num-input">1. 測驗題數：</label>
+                <input type="number" id="quiz-num-input" min="1" inputmode="numeric">
+                <label for="quiz-time-input">2. 每題時間 (秒) // 留空或 0 為不計時：</label>
+                <input type="number" id="quiz-time-input" min="0" inputmode="numeric" placeholder="手動輸入秒數啟用計時">
+                <div id="config-choice-only" style="display:none; margin-bottom: 12px;">
+                    <label style="display: flex; align-items: center; background: var(--surface-dark); padding: 12px; border: 1px solid var(--border-metal); border-left: 3px solid var(--arasaka-red); cursor: pointer;">
+                        <input type="checkbox" id="mask-toggle" checked style="width: 20px; height: 20px; margin-right: 12px; margin-bottom: 0; accent-color: var(--cyber-yellow);"> 遮蓋選項（加密盲測模式）
+                    </label>
+                </div>
+                <div id="config-input-only" style="display:none; margin-bottom: 12px;">
+                    <label style="display: flex; align-items: center; background: var(--surface-dark); padding: 12px; border: 1px solid var(--border-metal); border-left: 3px solid var(--cyber-yellow); cursor: pointer;">
+                        <input type="checkbox" id="hint-toggle" style="width: 20px; height: 20px; margin-right: 12px; margin-bottom: 0; accent-color: var(--cyber-yellow);"> 開啟首尾提示
+                    </label>
+                </div>
+                <p id="pool-info" style="font-size:13px; color:var(--text-muted); margin-top: 4px;"></p>
+                <button type="button" id="btn-start-quiz" class="btn-primary">確認開始 // EXECUTE</button>
+            </div>
+            <button type="button" id="btn-sel-back" style="margin-top:8px; border-left-color: var(--border-bright);">返回</button>
         </div>
-        
-        <div id="single-edit-area">
-            <input type="text" id="w-in" placeholder="英文單字">
-            <input type="text" id="m-in" placeholder="中文翻譯">
-            <input type="hidden" id="editing-idx" value="-1">
-            <button id="save-btn" onclick="saveWord()" class="btn-primary">加入單字</button>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="openBatchUI('import')" style="font-size:14px; flex:1; padding: 12px;">
-                    <svg class="svg-icon" style="width:18px; height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                    批次匯入
-                </button>
-                <button onclick="startSelectionMode()" style="font-size:14px; flex:1; padding: 12px;">
-                    <svg class="svg-icon" style="width:18px; height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    批次匯出
+
+        <!-- 5. 測驗進行中頁面 -->
+        <div id="p-quiz" class="page">
+            <div class="progress-bar">
+                <div id="progress-ghost"></div>
+                <div id="progress-fill"></div>
+            </div>
+
+            <div class="quiz-header-row">
+                <div id="q-info">SEQ // 01 / 01</div>
+                <div id="timer-display">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="13" r="8"></circle>
+                        <path d="M12 9v4l2 2"></path>
+                    </svg>
+                    <span id="timer-sec">0</span>s
+                </div>
+            </div>
+
+            <div class="quiz-word-container" id="quiz-word-box">
+                <div id="combo-hud">
+                    <span class="combo-main-badge" id="combo-main-text">COMBO x2</span>
+                    <span class="combo-sub-label">CRITICAL HIT // 數據同步</span>
+                </div>
+                <div class="quiz-word" id="q-word-display"></div>
+                <div id="q-hint-display" class="scaffold-text" style="display:none;"></div>
+
+                <div class="depletion-bar-track" id="depletion-bar-track">
+                    <div id="depletion-bar-fill"></div>
+                </div>
+            </div>
+
+            <!-- 選擇題 UI -->
+            <div id="ui-choice" style="display:none;">
+                <div class="options-wrapper">
+                    <div id="q-options-mask" class="options-mask">
+                        <div class="mask-badge">
+                            <svg class="svg-icon" style="width:15px; height:15px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            ENCRYPTED // 點擊執行破譯
+                        </div>
+                        <span style="font-size: 11px; color: var(--text-muted); font-weight: 700; letter-spacing: 1px;">[ DATA LOCKED ] TAP TO DECRYPT</span>
+                    </div>
+                    <div id="q-options-container"></div>
+                </div>
+                <div id="choice-next-box" style="display:none; margin-top: 12px;">
+                    <button type="button" id="btn-choice-next" class="btn-dark">
+                        確認並繼續 // NEXT
+                        <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 填充題 UI -->
+            <div id="ui-input" style="display:none;">
+                <div id="wrong-confirm-box">
+                    <div id="wrong-msg" style="margin-bottom: 12px; color: var(--text-main);"></div>
+                    <button type="button" id="btn-input-wrong-next" class="btn-danger" style="margin-bottom: 0;">我知道了，下一題</button>
+                </div>
+                <div id="input-zone">
+                    <input type="text" id="ans-in" autocomplete="off" spellcheck="false" placeholder="輸入英文單字...">
+                    <div class="action-burst-wrap" id="input-submit-wrap">
+                        <button type="button" id="input-submit-btn" class="btn-primary">送出驗證 // SUBMIT</button>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" id="end-quiz-btn" class="btn-ghost" style="margin-top:18px; font-size:14px;">結束遊戲</button>
+        </div>
+
+        <!-- 6. 測驗結算頁面：神經同步率動態儀表板 -->
+        <div id="p-result" class="page">
+            <h2>
+                <svg class="svg-icon" style="color:var(--netrunner-cyan); width:22px; height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                NEURAL SYNC DIAGNOSTIC
+            </h2>
+
+            <div class="sync-diagnostic-box">
+                <div class="sync-gauge-wrap">
+                    <svg class="sync-gauge-svg" viewBox="0 0 140 140">
+                        <circle cx="70" cy="70" r="56" fill="none" stroke="#1E2534" stroke-width="10"/>
+                        <circle cx="70" cy="70" r="56" fill="none" stroke="#262D3D" stroke-width="1" stroke-dasharray="3 5"/>
+                        <circle id="sync-ring-circle" cx="70" cy="70" r="56" fill="none" stroke="#00F0FF" stroke-width="10" stroke-linecap="butt" stroke-dasharray="351.86" stroke-dashoffset="351.86"/>
+                    </svg>
+                    <div class="sync-gauge-center">
+                        <span class="sync-rate-num" id="res-rate">0%</span>
+                        <span class="sync-rate-label">SYNC RATE</span>
+                    </div>
+                </div>
+
+                <div class="hacker-rank-badge" id="hacker-rank-badge">RANK C // ROOKIE MERC</div>
+
+                <div class="sync-metrics-grid">
+                    <div class="metric-cell">
+                        <span style="color:var(--text-muted);">總題數</span>
+                        <span id="res-total" style="font-family:'Orbitron',monospace;">0</span>
+                    </div>
+                    <div class="metric-cell">
+                        <span style="color:var(--text-muted);">同步成功</span>
+                        <span id="res-correct" style="font-family:'Orbitron',monospace; color:var(--netrunner-cyan);">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="res-wrong-section" style="display:none; margin-bottom: 14px;">
+                <div id="res-wrong-list" class="wrong-list-area"></div>
+                <button type="button" id="btn-copy-wrong" style="margin-top:10px; border-left-color: var(--arasaka-red);">
+                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13"/><path d="M5 15H4V4h11v1"/></svg>
+                    複製錯題清單
                 </button>
             </div>
+            <button type="button" id="btn-result-home" class="btn-primary">返回主選單 // RETURN</button>
         </div>
 
-        <div id="select-control-bar" style="display:none; background:var(--opt-bg); border: 2px solid var(--opt-border); padding:10px; border-radius:16px; margin-bottom:12px; gap:8px;">
-            <button onclick="toggleSelectAll(true)" style="padding:10px 8px; font-size:14px; flex:1; margin-bottom:0;">全選</button>
-            <button onclick="toggleSelectAll(false)" style="padding:10px 8px; font-size:14px; flex:1; margin-bottom:0;">全不選</button>
-            <button onclick="finishSelection()" class="btn-success" style="padding:10px 8px; font-size:14px; flex:1; margin-bottom:0;">確認選取</button>
-            <button onclick="cancelSelection()" style="padding:10px 8px; font-size:14px; flex:1; margin-bottom:0; background:#64748B; color:white; border-color:#64748B; box-shadow: 0 4px 0 #475569;">取消</button>
-        </div>
-
-        <div id="batch-edit-area" style="display:none; background:var(--batch-bg); border: 2px solid var(--opt-border); padding:18px; border-radius:20px; margin-top:12px;">
-            <h3 id="batch-title" style="margin-top:0; color:var(--primary);">批次處理</h3>
-            <textarea id="batch-input" rows="8" placeholder="格式：英文 中文 [選總,選對] {填總,填對}" style="background:#FFF;"></textarea>
-            <div id="batch-footer-btns">
-                <button id="batch-submit-btn" onclick="handleBatchFinish()" class="btn-primary">完成儲存</button>
-                <button id="batch-copy-btn" onclick="copyBatchContent()" class="btn-dark" style="display:none;">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                    一鍵複製全部
+        <!-- 7. 題庫管理頁面 -->
+        <div id="p-mgr" class="page">
+            <h2>
+                <svg class="svg-icon" style="color:var(--netrunner-cyan); width:22px; height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="4,3 18,3 21,6 21,21 4,21"/><rect x="7" y="13" width="10" height="8"/><rect x="8" y="6" width="8" height="4"/></svg>
+                題庫管理 // SHARDS
+            </h2>
+            <input type="text" id="db-in" placeholder="輸入新記憶晶片 (SHARD) 名稱">
+            <button type="button" id="btn-add-db" class="btn-primary">建立新記憶晶片</button>
+            <div id="db-list" style="margin-top: 10px;"></div>
+            <div style="margin-top:20px; padding: 14px; background: var(--surface-dark); border: 1px dashed var(--border-bright); text-align:center;">
+                <button type="button" id="btn-export-json" style="font-size:15px; margin-bottom: 10px;">
+                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><polyline points="7,10 12,15 17,10"/><path d="M4 17v4h16v-4"/></svg>
+                    匯出備份 (.json)
                 </button>
-                <button onclick="toggleBatch(false)" class="btn-ghost" style="margin-bottom: 0;">取消</button>
+                <input type="file" id="import-file" accept=".json" style="font-size:13px; margin-top:4px; margin-bottom:0; padding: 10px;">
             </div>
+            <button type="button" id="btn-mgr-back" style="margin-top: 14px; border-left-color: var(--border-bright);">返回</button>
         </div>
 
-        <div id="word-list-container" style="max-height:400px; overflow-y:auto; margin-top:16px; border:2px solid var(--opt-border); border-radius: 18px; padding: 6px;"></div>
-        <button id="edit-exit-btn" onclick="go('p-mgr')" style="margin-top:16px;">離開編輯</button>
+        <!-- 8. 題庫單字編輯頁面 -->
+        <div id="p-edit" class="page">
+            <h2 id="edit-title">編輯中</h2>
+            <div class="legend">
+                <div class="legend-item"><div class="stat-box stat-choice" style="width:20px; height:20px;"></div> 選擇題答對率</div>
+                <div class="legend-item"><div class="stat-box stat-input" style="width:20px; height:20px;"></div> 填充題答對率</div>
+            </div>
+
+            <div id="single-edit-area">
+                <input type="text" id="w-in" placeholder="英文單字">
+                <input type="text" id="m-in" placeholder="中文翻譯">
+                <input type="hidden" id="editing-idx" value="-1">
+                <button type="button" id="save-btn" class="btn-primary">加入單字</button>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" id="btn-open-batch-import" style="font-size:14px; flex:1; padding: 12px;">
+                        <svg class="svg-icon" style="width:17px; height:17px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 15V3"/><polyline points="7,8 12,3 17,8"/><path d="M4 17v4h16v-4"/></svg>
+                        批次匯入
+                    </button>
+                    <button type="button" id="btn-start-selection" style="font-size:14px; flex:1; padding: 12px; border-left-color: var(--cyber-yellow);">
+                        <svg class="svg-icon" style="width:17px; height:17px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><polyline points="7,10 12,15 17,10"/><path d="M4 17v4h16v-4"/></svg>
+                        批次匯出
+                    </button>
+                </div>
+            </div>
+
+            <div id="select-control-bar" style="display:none; background:var(--surface-dark); border: 1px solid var(--border-metal); padding:10px; margin-bottom:12px; gap:8px;">
+                <button type="button" id="btn-sel-all" style="padding:10px 8px; font-size:13px; flex:1; margin-bottom:0;">全選</button>
+                <button type="button" id="btn-sel-none" style="padding:10px 8px; font-size:13px; flex:1; margin-bottom:0;">全不選</button>
+                <button type="button" id="btn-sel-confirm" class="btn-success" style="padding:10px 8px; font-size:13px; flex:1; margin-bottom:0;">確認選取</button>
+                <button type="button" id="btn-sel-cancel" style="padding:10px 8px; font-size:13px; flex:1; margin-bottom:0; border-left-color: var(--border-bright); color:var(--text-muted);">取消</button>
+            </div>
+
+            <div id="batch-edit-area" style="display:none; background:var(--surface-dark); border: 1px solid var(--netrunner-cyan); padding:16px; margin-top:12px;">
+                <h3 id="batch-title" style="margin-top:0; color:var(--netrunner-cyan); font-size:16px;">批次處理</h3>
+                <textarea id="batch-input" rows="8" placeholder="格式：英文 中文 [選總,選對] {填總,填對}"></textarea>
+                <div id="batch-footer-btns">
+                    <button type="button" id="batch-submit-btn" class="btn-primary">完成儲存</button>
+                    <button type="button" id="batch-copy-btn" class="btn-dark" style="display:none;">
+                        <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13"/><path d="M5 15H4V4h11v1"/></svg>
+                        一鍵複製全部
+                    </button>
+                    <button type="button" id="btn-batch-cancel" class="btn-ghost" style="margin-bottom: 0;">取消</button>
+                </div>
+            </div>
+
+            <div id="word-list-container" style="max-height:400px; overflow-y:auto; margin-top:14px; border:1px solid var(--border-metal); padding: 6px; background: var(--cyber-black);"></div>
+            <button type="button" id="edit-exit-btn" style="margin-top:14px; border-left-color: var(--border-bright);">離開編輯</button>
+        </div>
     </div>
 </div>
 
 <script>
-    const STORAGE_KEY = 'pro_v_db_v3';
-    let db = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+(() => {
+    'use strict';
 
-    if (Object.keys(db).length === 0) {
+    const STORAGE_KEY = 'pro_v_db_v3';
+    const TIME_PREF_KEY = 'pro_v_last_time';
+
+    let db = {};
+    try {
+        db = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    } catch (e) {
+        db = {};
+    }
+
+    if (!db || typeof db !== 'object' || Object.keys(db).length === 0) {
         db = {
             "系統預設題庫(測試與體驗功能用，無需使用可刪除)": [
-                { w: "Success", m: "成功", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } },
-                { w: "Challenge", m: "挑戰", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } },
-                { w: "Practice", m: "練習", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } },
-                { w: "Memory", m: "記憶", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } },
-                { w: "Growth", m: "成長", stats: { choice: {t:0, c:0}, input: {t:0, c:0} } }
+                { w: "Success", m: "成功", stats: { choice: { t: 0, c: 0 }, input: { t: 0, c: 0 } } },
+                { w: "Challenge", m: "挑戰", stats: { choice: { t: 0, c: 0 }, input: { t: 0, c: 0 } } },
+                { w: "Practice", m: "練習", stats: { choice: { t: 0, c: 0 }, input: { t: 0, c: 0 } } },
+                { w: "Memory", m: "記憶", stats: { choice: { t: 0, c: 0 }, input: { t: 0, c: 0 } } },
+                { w: "Growth", m: "成長", stats: { choice: { t: 0, c: 0 }, input: { t: 0, c: 0 } } }
             ]
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        saveDB();
     }
 
     let currentDB = "";
-    let currentGameMode = ""; 
+    let currentGameMode = "";
     let quizQueue = [];
     let currentIdx = 0;
-    let quizTimer = null;
+    let countdownRAF = null;
+    let scrambleTimer = null;
+    let diagRAF = null;
     let correctCount = 0;
     let wrongList = [];
     let isSelecting = false;
-    let isMaskActive = false;
+    let isMaskActive = true;
+    let comboStreak = 0;
+    let isMuted = false;
+    let audioCtx = null;
+    let isAnsweringLocked = false;
+    let syncLabelToggle = false;
+    let lastUsedTime = localStorage.getItem(TIME_PREF_KEY) || "";
+    let endQuizArmed = false;
+    let endQuizResetTimer = null;
+    let toastHideTimer = null;
 
-    const SVG_FOLDER = `<svg class="svg-icon" style="color:var(--warning); margin-right:6px;" viewBox="0 0 24 24" fill="currentColor" stroke="var(--text-dark)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`;
+    const SVG_SHARD = `<svg class="svg-icon" style="color:var(--cyber-yellow); margin-right:6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5,3 17,3 20,6 20,21 5,21"/><line x1="8" y1="9" x2="17" y2="9"/><line x1="8" y1="13" x2="15" y2="13"/></svg>`;
+
+    function saveDB() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    }
+
+    function escapeHTML(str) {
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function startTelemetryTicker() {
+        const el = document.getElementById('telemetry-text');
+        if (!el) return;
+        const statuses = ['STABLE', 'SYNCED', 'ACTIVE', 'SECURE'];
+        setInterval(() => {
+            const hex = Math.floor(0x1000 + Math.random() * 0xEFFF).toString(16).toUpperCase();
+            const st = statuses[Math.floor(Math.random() * statuses.length)];
+            el.textContent = `MEM: 0x${hex} // NEURAL_LINK: ${st}`;
+        }, 2200);
+    }
+
+    function initTactileButtonSystem() {
+        let activeBtn = null;
+
+        document.addEventListener('pointerdown', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn || btn.disabled) return;
+
+            activeBtn = btn;
+            btn.classList.remove('is-releasing');
+            btn.classList.add('is-pressing');
+
+            const rect = btn.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height) * 0.9;
+            const ripple = document.createElement('span');
+            ripple.className = 'tactile-ripple';
+            ripple.style.width = `${size}px`;
+            ripple.style.height = `${size}px`;
+            ripple.style.left = `${e.clientX - rect.left}px`;
+            ripple.style.top = `${e.clientY - rect.top}px`;
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 460);
+        });
+
+        const releaseButton = () => {
+            if (!activeBtn) return;
+            const btn = activeBtn;
+            activeBtn = null;
+            btn.classList.remove('is-pressing');
+            if (!btn.disabled) {
+                btn.classList.remove('is-releasing');
+                void btn.offsetWidth;
+                btn.classList.add('is-releasing');
+                setTimeout(() => btn.classList.remove('is-releasing'), 250);
+            }
+        };
+
+        document.addEventListener('pointerup', releaseButton);
+        document.addEventListener('pointercancel', releaseButton);
+    }
+
+    function showHudNotice(msg, isWarn = false) {
+        const banner = document.getElementById('hud-toast-banner');
+        if (!banner) return;
+        if (toastHideTimer) clearTimeout(toastHideTimer);
+        banner.textContent = msg;
+        banner.classList.toggle('toast-warn', Boolean(isWarn));
+        banner.classList.add('show');
+        toastHideTimer = setTimeout(() => {
+            banner.classList.remove('show');
+        }, 2600);
+    }
+
+    function fallbackCopy(text, successMsg) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+            document.execCommand('copy');
+            showHudNotice(successMsg);
+        } catch (e) {
+            showHudNotice("複製失敗，請手動選取複製", true);
+        }
+        document.body.removeChild(ta);
+    }
+
+    function copyTextSafe(text, successMsg) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text)
+                .then(() => showHudNotice(successMsg))
+                .catch(() => fallbackCopy(text, successMsg));
+        } else {
+            fallbackCopy(text, successMsg);
+        }
+    }
+
+    function playCyberSound(type) {
+        if (isMuted) return;
+        try {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContextClass) return;
+                audioCtx = new AudioContextClass();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const now = audioCtx.currentTime;
+
+            if (type === 'click') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(520, now);
+                osc.frequency.exponentialRampToValueAtTime(240, now + 0.045);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else if (type === 'correct') {
+                const freqs = [880, 1318.5];
+                freqs.forEach((f, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    const t0 = now + idx * 0.065;
+                    osc.frequency.setValueAtTime(f, t0);
+                    gain.gain.setValueAtTime(0.11, t0);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.14);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(t0);
+                    osc.stop(t0 + 0.15);
+                });
+            } else if (type === 'wrong') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(165, now);
+                osc.frequency.linearRampToValueAtTime(82, now + 0.22);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'decrypt') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(960, now + 0.08);
+                gain.gain.setValueAtTime(0.07, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            }
+        } catch (e) {}
+    }
+
+    function toggleMute() {
+        isMuted = !isMuted;
+        const btn = document.getElementById('audio-toggle-btn');
+        btn.classList.toggle('muted', isMuted);
+        btn.textContent = isMuted ? 'MUTE' : 'SFX';
+        if (!isMuted) playCyberSound('click');
+    }
+
+    function updateComboHUD() {
+        const comboEl = document.getElementById('combo-hud');
+        const mainText = document.getElementById('combo-main-text');
+        if (comboStreak >= 2) {
+            mainText.textContent = `COMBO x${comboStreak}`;
+            comboEl.style.display = 'flex';
+            comboEl.classList.remove('combo-pop');
+            void comboEl.offsetWidth;
+            comboEl.classList.add('combo-pop');
+        } else {
+            comboEl.style.display = 'none';
+            comboEl.classList.remove('combo-pop');
+        }
+    }
+
+    function spawnDigitalShards(targetEl) {
+        let cx = window.innerWidth / 2;
+        let cy = window.innerHeight * 0.55;
+        if (targetEl && typeof targetEl.getBoundingClientRect === 'function') {
+            const rect = targetEl.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+                cx = rect.left + rect.width / 2;
+                cy = rect.top + rect.height / 2;
+            }
+        }
+        const palette = ['#00F0FF', '#FCEE09', '#FFFFFF'];
+        const shardCount = 16;
+        for (let i = 0; i < shardCount; i++) {
+            const shard = document.createElement('div');
+            shard.className = 'cyber-data-shard';
+            const angle = (Math.PI * 2 * i) / shardCount + (Math.random() - 0.5) * 0.45;
+            const distance = 65 + Math.random() * 95;
+            const dx = Math.cos(angle) * distance;
+            const dy = Math.sin(angle) * distance;
+            const rot = Math.floor((Math.random() - 0.5) * 540) + 'deg';
+            const color = palette[i % palette.length];
+            const size = 6 + Math.floor(Math.random() * 6);
+
+            shard.style.left = `${cx}px`;
+            shard.style.top = `${cy}px`;
+            shard.style.width = `${size}px`;
+            shard.style.height = `${size}px`;
+            shard.style.background = color;
+            shard.style.boxShadow = `0 0 8px ${color}`;
+            shard.style.setProperty('--dx', `${dx}px`);
+            shard.style.setProperty('--dy', `${dy}px`);
+            shard.style.setProperty('--rot', rot);
+
+            document.body.appendChild(shard);
+            setTimeout(() => shard.remove(), 460);
+        }
+    }
+
+    function triggerCorrectExplosion(targetBtn) {
+        const wrap = targetBtn ? targetBtn.parentElement : null;
+        if (wrap) {
+            const shockwave = document.createElement('div');
+            shockwave.className = 'cyber-shockwave';
+            wrap.appendChild(shockwave);
+            setTimeout(() => shockwave.remove(), 420);
+
+            const floatTag = document.createElement('div');
+            floatTag.className = 'floating-sync-tag';
+            syncLabelToggle = !syncLabelToggle;
+            floatTag.textContent = syncLabelToggle ? '+100 SYNC // ACCESS GRANTED' : 'ACCESS GRANTED // +100 SYNC';
+            wrap.appendChild(floatTag);
+            setTimeout(() => floatTag.remove(), 500);
+        }
+
+        const outerFrame = document.getElementById('hud-outer-frame');
+        const container = document.getElementById('main-hud-container');
+        outerFrame.classList.remove('hud-sync-flash');
+        container.classList.remove('hud-sync-flash');
+        void container.offsetWidth;
+        outerFrame.classList.add('hud-sync-flash');
+        container.classList.add('hud-sync-flash');
+
+        const scanline = document.createElement('div');
+        scanline.className = 'scanline-surge';
+        container.appendChild(scanline);
+        setTimeout(() => scanline.remove(), 430);
+
+        setTimeout(() => {
+            outerFrame.classList.remove('hud-sync-flash');
+            container.classList.remove('hud-sync-flash');
+        }, 460);
+
+        spawnDigitalShards(targetBtn);
+    }
+
+    function triggerWrongFeedback() {
+        comboStreak = 0;
+        updateComboHUD();
+        playCyberSound('wrong');
+        const container = document.getElementById('main-hud-container');
+        const wordBox = document.getElementById('quiz-word-box');
+        container.classList.remove('shake-active');
+        wordBox.classList.remove('word-glitch');
+        void container.offsetWidth;
+        container.classList.add('shake-active');
+        wordBox.classList.add('word-glitch');
+        setTimeout(() => {
+            container.classList.remove('shake-active');
+            wordBox.classList.remove('word-glitch');
+        }, 260);
+    }
+
+    function stopAllQuizTimers() {
+        if (countdownRAF) {
+            cancelAnimationFrame(countdownRAF);
+            countdownRAF = null;
+        }
+        if (scrambleTimer) {
+            clearInterval(scrambleTimer);
+            scrambleTimer = null;
+        }
+    }
+
+    function resetEndQuizButton() {
+        endQuizArmed = false;
+        if (endQuizResetTimer) {
+            clearTimeout(endQuizResetTimer);
+            endQuizResetTimer = null;
+        }
+        const btn = document.getElementById('end-quiz-btn');
+        if (btn) {
+            btn.className = 'btn-ghost';
+            btn.textContent = '結束遊戲';
+        }
+    }
+
+    function handleEndQuizClick() {
+        const btn = document.getElementById('end-quiz-btn');
+        if (!endQuizArmed) {
+            endQuizArmed = true;
+            playCyberSound('click');
+            if (btn) {
+                btn.className = 'btn-abort-armed';
+                btn.textContent = '再次點擊確認中止 // CONFIRM ABORT';
+            }
+            if (endQuizResetTimer) clearTimeout(endQuizResetTimer);
+            endQuizResetTimer = setTimeout(() => {
+                resetEndQuizButton();
+            }, 3000);
+        } else {
+            playCyberSound('wrong');
+            resetEndQuizButton();
+            go('p-main');
+        }
+    }
+
+    function applyDefaultQuizConfigForMode(mode) {
+        // 兩個模式預設皆關閉計時（留空，手動輸入秒數才計時）
+        const timeInput = document.getElementById('quiz-time-input');
+        timeInput.value = lastUsedTime && parseInt(lastUsedTime, 10) > 0 ? lastUsedTime : "";
+
+        // 選擇題預設開啟遮蓋，除非使用者手動取消勾選
+        if (mode === 'choice') {
+            document.getElementById('mask-toggle').checked = true;
+            isMaskActive = true;
+        } else {
+            document.getElementById('hint-toggle').checked = false;
+        }
+    }
+
+    function go(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) targetPage.classList.add('active');
+
+        stopAllQuizTimers();
+        if (diagRAF) {
+            cancelAnimationFrame(diagRAF);
+            diagRAF = null;
+        }
+        resetEndQuizButton();
+        document.getElementById('timer-display').style.display = 'none';
+        document.getElementById('depletion-bar-track').style.display = 'none';
+
+        if (pageId === 'p-mgr') drawDBList();
+        if (pageId === 'p-sel') {
+            drawSelList();
+            applyDefaultQuizConfigForMode(currentGameMode);
+        }
+        if (pageId !== 'p-edit') cancelSelection();
+    }
 
     function formatItemToString(item) {
         let s = `${item.w} ${item.m}`;
-        if(item.stats) {
-            s += ` [${item.stats.choice.t},${item.stats.choice.c}] {${item.stats.input.t},${item.stats.input.c}}`;
+        if (item.stats) {
+            const ct = item.stats.choice?.t || 0;
+            const cc = item.stats.choice?.c || 0;
+            const it = item.stats.input?.t || 0;
+            const ic = item.stats.input?.c || 0;
+            s += ` [${ct},${cc}] {${it},${ic}}`;
         }
         return s;
     }
@@ -912,19 +2046,18 @@
 
         const choiceMatch = line.match(/\[(\d+),(\d+)\]/);
         if (choiceMatch) {
-            stats.choice.t = parseInt(choiceMatch[1]);
-            stats.choice.c = parseInt(choiceMatch[2]);
+            stats.choice.t = parseInt(choiceMatch[1], 10);
+            stats.choice.c = parseInt(choiceMatch[2], 10);
             line = line.replace(choiceMatch[0], "").trim();
         }
         const inputMatch = line.match(/\{(\d+),(\d+)\}/);
         if (inputMatch) {
-            stats.input.t = parseInt(inputMatch[1]);
-            stats.input.c = parseInt(inputMatch[2]);
+            stats.input.t = parseInt(inputMatch[1], 10);
+            stats.input.c = parseInt(inputMatch[2], 10);
             line = line.replace(inputMatch[0], "").trim();
         }
 
         const firstChnIdx = line.search(/[\u4e00-\u9fa5]/);
-
         let englishPart = "";
         let chinesePart = "";
 
@@ -945,7 +2078,7 @@
                 chinesePart = line.substring(splitPos).trim();
             }
         } else {
-            let splitIdx = line.indexOf(" ");
+            const splitIdx = line.indexOf(" ");
             if (splitIdx !== -1) {
                 englishPart = line.substring(0, splitIdx).trim();
                 chinesePart = line.substring(splitIdx).trim();
@@ -953,7 +2086,7 @@
         }
 
         if (englishPart && chinesePart) {
-            return { w: englishPart, m: chinesePart, stats: stats };
+            return { w: englishPart, m: chinesePart, stats };
         }
         return null;
     }
@@ -965,13 +2098,13 @@
 
     function getCombinedRate(item) {
         if (!item.stats) return 0;
-        let totalT = (item.stats.choice?.t || 0) + (item.stats.input?.t || 0);
-        let totalC = (item.stats.choice?.c || 0) + (item.stats.input?.c || 0);
+        const totalT = (item.stats.choice?.t || 0) + (item.stats.input?.t || 0);
+        const totalC = (item.stats.choice?.c || 0) + (item.stats.input?.c || 0);
         return totalT === 0 ? 0 : (totalC / totalT);
     }
 
     function isDuplicate(w, m, dbName, excludeIdx = -1) {
-        if(!db[dbName]) return false;
+        if (!db[dbName]) return false;
         const targetW = w.trim().toLowerCase();
         const targetM = m.trim().toLowerCase();
         return db[dbName].some((item, idx) => {
@@ -980,103 +2113,234 @@
         });
     }
 
-    function go(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        if(quizTimer) clearInterval(quizTimer);
-        document.getElementById('timer-display').style.display = 'none';
-        if(pageId === 'p-mgr') drawDBList();
-        if(pageId === 'p-sel') drawSelList();
-        if(pageId !== 'p-edit') cancelSelection();
-    }
-
-    function setGameMode(mode) {
-        currentGameMode = mode;
-        document.getElementById('sel-title-text').innerText = (mode === 'choice' ? '英翻中：設定' : '中翻英：設定');
-        document.getElementById('config-choice-only').style.display = (mode === 'choice' ? 'block' : 'none');
-        document.getElementById('config-input-only').style.display = (mode === 'input' ? 'block' : 'none');
-        go('p-sel');
-    }
-
-    function saveDB() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
-
     function addDB() {
-        let name = document.getElementById('db-in').value.trim();
-        if(!name || db[name]) return alert("名稱無效或已存在");
-        db[name] = []; saveDB(); drawDBList();
-        document.getElementById('db-in').value = "";
+        const inputEl = document.getElementById('db-in');
+        const name = inputEl.value.trim();
+        if (!name || db[name]) {
+            playCyberSound('wrong');
+            return showHudNotice("晶片名稱無效或已存在", true);
+        }
+        db[name] = [];
+        saveDB();
+        drawDBList();
+        inputEl.value = "";
+        playCyberSound('click');
+        showHudNotice(`已建立記憶晶片：${name}`);
     }
 
     function drawDBList() {
-        let html = '';
-        for(let n in db) {
-            html += `<div class="item">
-                <span onclick="openEdit('${n}')" style="color:var(--primary); font-weight:800; cursor:pointer; flex:1; display:flex; align-items:center;">${SVG_FOLDER} ${n} (${db[n].length})</span>
-                <button class="btn-del btn-rename" onclick="renameDB('${n}')">名</button>
-                <button class="btn-del" onclick="if(confirm('刪除整個題庫？')){delete db['${n}']; saveDB(); drawDBList();}">刪</button>
-            </div>`;
-        }
-        document.getElementById('db-list').innerHTML = html;
-    }
+        const listEl = document.getElementById('db-list');
+        listEl.innerHTML = '';
+        Object.keys(db).forEach(n => {
+            const row = document.createElement('div');
+            row.className = 'item';
 
-    function renameDB(old) {
-        let n = prompt("重命名題庫：", old);
-        if(n && n.trim() && !db[n]) { db[n] = db[old]; delete db[old]; saveDB(); drawDBList(); }
+            const titleSpan = document.createElement('span');
+            titleSpan.style.cssText = 'color:var(--netrunner-cyan); font-weight:800; cursor:pointer; flex:1; display:flex; align-items:center; min-width:0;';
+            titleSpan.innerHTML = `${SVG_SHARD} <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(n)} (${db[n].length})</span>`;
+            titleSpan.addEventListener('click', () => {
+                playCyberSound('click');
+                openEdit(n);
+            });
+
+            const renameBtn = document.createElement('button');
+            renameBtn.type = 'button';
+            renameBtn.className = 'btn-del btn-rename';
+            renameBtn.textContent = '名';
+            renameBtn.addEventListener('click', () => {
+                playCyberSound('click');
+                row.innerHTML = '';
+                const renameWrap = document.createElement('div');
+                renameWrap.className = 'inline-rename-wrap';
+
+                const renameInput = document.createElement('input');
+                renameInput.type = 'text';
+                renameInput.className = 'inline-rename-input';
+                renameInput.value = n;
+
+                const confirmRename = () => {
+                    const trimmed = renameInput.value.trim();
+                    if (!trimmed || trimmed === n) {
+                        drawDBList();
+                        return;
+                    }
+                    if (db[trimmed]) {
+                        playCyberSound('wrong');
+                        showHudNotice("目標晶片名稱已存在", true);
+                        return;
+                    }
+                    db[trimmed] = db[n];
+                    delete db[n];
+                    saveDB();
+                    playCyberSound('click');
+                    showHudNotice(`已重命名為：${trimmed}`);
+                    drawDBList();
+                };
+
+                const okBtn = document.createElement('button');
+                okBtn.type = 'button';
+                okBtn.className = 'btn-mini-ok';
+                okBtn.textContent = '確定';
+                okBtn.addEventListener('click', confirmRename);
+
+                const cancelBtn = document.createElement('button');
+                cancelBtn.type = 'button';
+                cancelBtn.className = 'btn-mini-cancel';
+                cancelBtn.textContent = '取消';
+                cancelBtn.addEventListener('click', () => drawDBList());
+
+                renameInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') confirmRename();
+                    if (e.key === 'Escape') drawDBList();
+                });
+
+                renameWrap.append(renameInput, okBtn, cancelBtn);
+                row.appendChild(renameWrap);
+                renameInput.focus();
+                renameInput.select();
+            });
+
+            let delArmed = false;
+            let delResetTimer = null;
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'btn-del';
+            delBtn.textContent = '刪';
+            delBtn.addEventListener('click', () => {
+                if (!delArmed) {
+                    delArmed = true;
+                    delBtn.classList.add('armed-del');
+                    delBtn.textContent = '確認刪';
+                    playCyberSound('click');
+                    delResetTimer = setTimeout(() => {
+                        delArmed = false;
+                        delBtn.classList.remove('armed-del');
+                        delBtn.textContent = '刪';
+                    }, 3000);
+                } else {
+                    if (delResetTimer) clearTimeout(delResetTimer);
+                    delete db[n];
+                    saveDB();
+                    playCyberSound('wrong');
+                    showHudNotice(`已銷毀記憶晶片：${n}`, true);
+                    drawDBList();
+                }
+            });
+
+            row.append(titleSpan, renameBtn, delBtn);
+            listEl.appendChild(row);
+        });
     }
 
     function openEdit(n) {
         currentDB = n;
-        document.getElementById('edit-title').innerText = n;
-        resetEdit(); drawWordList(); go('p-edit');
+        document.getElementById('edit-title').textContent = n;
+        resetEdit();
+        drawWordList();
+        go('p-edit');
     }
 
     function resetEdit() {
-        document.getElementById('w-in').value = ""; document.getElementById('m-in').value = "";
+        document.getElementById('w-in').value = "";
+        document.getElementById('m-in').value = "";
         document.getElementById('editing-idx').value = "-1";
         const saveBtn = document.getElementById('save-btn');
-        saveBtn.innerText = "加入單字";
+        saveBtn.textContent = "加入單字";
         saveBtn.className = "btn-primary";
         toggleBatch(false);
     }
 
     function saveWord() {
-        let w = document.getElementById('w-in').value.trim();
-        let m = document.getElementById('m-in').value.trim();
-        let idx = parseInt(document.getElementById('editing-idx').value);
-        if(!w || !m) return alert("請填寫完整");
-        if(isDuplicate(w, m, currentDB, idx)) return alert("此單字組合已存在！");
-        if(idx === -1) {
-            db[currentDB].push({ w, m, stats: { choice: {t:0, c:0}, input: {t:0, c:0} } });
+        const w = document.getElementById('w-in').value.trim();
+        const m = document.getElementById('m-in').value.trim();
+        const idx = parseInt(document.getElementById('editing-idx').value, 10);
+        if (!w || !m) {
+            playCyberSound('wrong');
+            return showHudNotice("請填寫完整英文與中文內容", true);
+        }
+        if (isDuplicate(w, m, currentDB, idx)) {
+            playCyberSound('wrong');
+            return showHudNotice("此單字組合已存在於晶片中！", true);
+        }
+
+        if (idx === -1) {
+            db[currentDB].push({ w, m, stats: { choice: { t: 0, c: 0 }, input: { t: 0, c: 0 } } });
         } else {
-            let originalStats = db[currentDB][idx].stats || { choice: {t:0, c:0}, input: {t:0, c:0} };
+            const originalStats = db[currentDB][idx].stats || { choice: { t: 0, c: 0 }, input: { t: 0, c: 0 } };
             db[currentDB][idx] = { w, m, stats: originalStats };
         }
-        saveDB(); drawWordList(); resetEdit();
+        saveDB();
+        drawWordList();
+        resetEdit();
+        playCyberSound('click');
+        document.getElementById('w-in').focus();
     }
 
     function drawWordList() {
-        let list = db[currentDB] || [];
+        const container = document.getElementById('word-list-container');
+        const list = db[currentDB] || [];
         list.sort((a, b) => getCombinedRate(a) - getCombinedRate(b));
-        let html = '';
+        container.innerHTML = '';
+
+        if (list.length === 0) {
+            container.innerHTML = '<p style="padding:20px; text-align:center; color:var(--text-muted);">沒有單字</p>';
+            return;
+        }
+
         list.forEach((item, i) => {
-            html += `<div class="item ${isSelecting ? 'selecting' : ''}">
-                <input type="checkbox" class="batch-checkbox" data-idx="${i}">
-                <div class="word-clickable" onclick="${isSelecting ? `toggleItemCheck(${i})` : `triggerEditWord(${i})`}">
-                    <span class="word-text">${item.w}</span>
-                    <small style="color:var(--text-muted); font-weight:700;">${item.m}</small>
-                </div>
-                <div class="stat-group">
-                    <div class="stat-box stat-choice">${getModeRate(item, 'choice')}</div>
-                    <div class="stat-box stat-input">${getModeRate(item, 'input')}</div>
-                </div>
-                <button class="btn-del" onclick="db['${currentDB}'].splice(${i},1); saveDB(); drawWordList();">X</button>
-            </div>`;
+            const row = document.createElement('div');
+            row.className = `item ${isSelecting ? 'selecting' : ''}`;
+
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.className = 'batch-checkbox';
+            cb.dataset.idx = String(i);
+
+            const wordBox = document.createElement('div');
+            wordBox.className = 'word-clickable';
+            wordBox.innerHTML = `<span class="word-text">${escapeHTML(item.w)}</span><small style="color:var(--text-muted); font-weight:700;">${escapeHTML(item.m)}</small>`;
+            wordBox.addEventListener('click', () => {
+                if (isSelecting) {
+                    cb.checked = !cb.checked;
+                } else {
+                    document.getElementById('w-in').value = item.w;
+                    document.getElementById('m-in').value = item.m;
+                    document.getElementById('editing-idx').value = String(i);
+                    const saveBtn = document.getElementById('save-btn');
+                    saveBtn.textContent = "更新單字";
+                    saveBtn.className = "btn-warning";
+                    document.getElementById('w-in').focus();
+                }
+            });
+
+            const statGroup = document.createElement('div');
+            statGroup.className = 'stat-group';
+            statGroup.innerHTML = `
+                <div class="stat-box stat-choice">${getModeRate(item, 'choice')}</div>
+                <div class="stat-box stat-input">${getModeRate(item, 'input')}</div>
+            `;
+
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'btn-del';
+            delBtn.textContent = 'X';
+            delBtn.addEventListener('click', () => {
+                db[currentDB].splice(i, 1);
+                saveDB();
+                drawWordList();
+                resetEdit();
+            });
+
+            row.append(cb, wordBox, statGroup, delBtn);
+            container.appendChild(row);
         });
-        document.getElementById('word-list-container').innerHTML = html || '<p style="padding:20px; text-align:center; color:var(--text-muted);">沒有單字</p>';
     }
 
     function startSelectionMode() {
-        if(!db[currentDB] || db[currentDB].length === 0) return alert("題庫是空的");
+        if (!db[currentDB] || db[currentDB].length === 0) {
+            playCyberSound('wrong');
+            return showHudNotice("目前題庫是空的", true);
+        }
         isSelecting = true;
         document.getElementById('single-edit-area').style.display = 'none';
         document.getElementById('select-control-bar').style.display = 'flex';
@@ -1084,13 +2348,8 @@
         drawWordList();
     }
 
-    function toggleItemCheck(i) {
-        const cb = document.querySelector(`.batch-checkbox[data-idx="${i}"]`);
-        if(cb) cb.checked = !cb.checked;
-    }
-
     function toggleSelectAll(val) {
-        document.querySelectorAll('.batch-checkbox').forEach(cb => cb.checked = val);
+        document.querySelectorAll('.batch-checkbox').forEach(cb => { cb.checked = val; });
     }
 
     function cancelSelection() {
@@ -1098,25 +2357,30 @@
         document.getElementById('single-edit-area').style.display = 'block';
         document.getElementById('select-control-bar').style.display = 'none';
         document.getElementById('edit-exit-btn').style.display = 'inline-flex';
-        drawWordList();
+        if (currentDB && db[currentDB]) drawWordList();
     }
 
     function finishSelection() {
-        const selectedIdxs = Array.from(document.querySelectorAll('.batch-checkbox:checked')).map(cb => parseInt(cb.dataset.idx));
-        if(selectedIdxs.length === 0) return alert("請至少勾選一個單字");
+        const selectedIdxs = Array.from(document.querySelectorAll('.batch-checkbox:checked'))
+            .map(cb => parseInt(cb.dataset.idx, 10));
+        if (selectedIdxs.length === 0) {
+            playCyberSound('wrong');
+            return showHudNotice("請至少勾選一個單字", true);
+        }
         const selectedData = selectedIdxs.map(idx => db[currentDB][idx]);
+
         isSelecting = false;
         document.getElementById('select-control-bar').style.display = 'none';
         document.getElementById('edit-exit-btn').style.display = 'inline-flex';
-        
+
         const input = document.getElementById('batch-input');
         const submit = document.getElementById('batch-submit-btn');
         const copyBtn = document.getElementById('batch-copy-btn');
-        
-        document.getElementById('batch-title').innerText = `匯出選取的單字 (${selectedData.length} 個)`;
+
+        document.getElementById('batch-title').textContent = `匯出選取的單字 (${selectedData.length} 個)`;
         input.value = selectedData.map(i => formatItemToString(i)).join('\n');
-        input.readOnly = true; 
-        submit.style.display = "none"; 
+        input.readOnly = true;
+        submit.style.display = "none";
         copyBtn.style.display = "inline-flex";
         toggleBatch(true);
     }
@@ -1131,211 +2395,487 @@
         const input = document.getElementById('batch-input');
         const submit = document.getElementById('batch-submit-btn');
         const copyBtn = document.getElementById('batch-copy-btn');
-        if(mode === 'import') {
-            document.getElementById('batch-title').innerText = "智慧批次匯入";
-            input.value = ""; input.readOnly = false; submit.style.display = "inline-flex"; copyBtn.style.display = "none";
+        if (mode === 'import') {
+            document.getElementById('batch-title').textContent = "智慧批次匯入";
+            input.value = "";
+            input.readOnly = false;
+            submit.style.display = "inline-flex";
+            copyBtn.style.display = "none";
             toggleBatch(true);
+            input.focus();
         }
     }
 
     function handleBatchFinish() {
-        let raw = document.getElementById('batch-input').value.trim();
-        if(!raw) { toggleBatch(false); return; }
-        let lines = raw.split('\n');
-        let added = 0, skipped = 0;
+        const raw = document.getElementById('batch-input').value.trim();
+        if (!raw) {
+            toggleBatch(false);
+            return;
+        }
+        const lines = raw.split('\n');
+        let added = 0;
+        let skipped = 0;
         lines.forEach(line => {
-            let item = parseStringToItem(line);
-            if(item && !isDuplicate(item.w, item.m, currentDB)) {
+            if (!line.trim()) return;
+            const item = parseStringToItem(line);
+            if (item && !isDuplicate(item.w, item.m, currentDB)) {
                 db[currentDB].push(item);
                 added++;
-            } else { skipped++; }
+            } else {
+                skipped++;
+            }
         });
-        saveDB(); drawWordList(); toggleBatch(false);
-        alert(`匯入完成！\n成功：${added}\n忽略：${skipped}`);
-    }
-
-    function copyBatchContent() {
-        navigator.clipboard.writeText(document.getElementById('batch-input').value).then(() => alert("已複製到剪貼簿！"));
-    }
-
-    function triggerEditWord(i) {
-        let item = db[currentDB][i];
-        document.getElementById('w-in').value = item.w;
-        document.getElementById('m-in').value = item.m;
-        document.getElementById('editing-idx').value = i;
-        const saveBtn = document.getElementById('save-btn');
-        saveBtn.innerText = "更新單字";
-        saveBtn.className = "btn-warning";
+        saveDB();
+        drawWordList();
+        toggleBatch(false);
+        playCyberSound('click');
+        showHudNotice(`批次匯入完成 // 成功：${added} 筆，忽略重複：${skipped} 筆`);
     }
 
     function exportJSON() {
-        const blob = new Blob([JSON.stringify(db, null, 2)], {type: "application/json"});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-        a.download = `備份_${new Date().toLocaleDateString()}.json`; a.click();
+        const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `備份_${new Date().toLocaleDateString()}.json`;
+        a.click();
     }
 
     function importJSON(e) {
-        const reader = new FileReader();
         const file = e.target.files[0];
-        if(!file) return;
+        if (!file) return;
+        const reader = new FileReader();
         reader.onload = (ev) => {
             try {
-                let data = JSON.parse(ev.target.result);
-                for(let key in data) {
-                    if(!db[key]) db[key] = data[key];
-                    else {
+                const data = JSON.parse(ev.target.result);
+                let newDecks = 0;
+                let mergedWords = 0;
+                for (const key in data) {
+                    if (!Array.isArray(data[key])) continue;
+                    if (!db[key]) {
+                        db[key] = data[key];
+                        newDecks++;
+                    } else {
                         data[key].forEach(nw => {
-                            if(!isDuplicate(nw.w, nw.m, key)) db[key].push(nw);
+                            if (nw && nw.w && nw.m && !isDuplicate(nw.w, nw.m, key)) {
+                                db[key].push(nw);
+                                mergedWords++;
+                            }
                         });
                     }
                 }
-                saveDB(); drawDBList(); alert("匯入成功！");
-            } catch(err) { alert("格式錯誤"); }
+                saveDB();
+                drawDBList();
+                playCyberSound('correct');
+                showHudNotice(`智能匯入完成 // 新增晶片：${newDecks} 個，合併新詞：${mergedWords} 個`);
+            } catch (err) {
+                playCyberSound('wrong');
+                showHudNotice("格式錯誤，請確認為正確的 JSON 備份檔", true);
+            }
         };
-        reader.readAsText(file); e.target.value = ""; 
+        reader.readAsText(file);
+        e.target.value = "";
     }
 
-    function prepQuiz(n) {
-        currentDB = n;
-        document.querySelectorAll('#sel-list button').forEach(b => b.classList.remove('selected-db'));
-        const target = document.getElementById('btn-sel-'+n);
-        if(target) target.classList.add('selected-db');
-        document.getElementById('quiz-config').style.display = 'block';
-        document.getElementById('quiz-num-input').value = db[n].length;
-        document.getElementById('pool-info').innerText = "上限：" + db[n].length + " 題";
+    function setGameMode(mode) {
+        currentGameMode = mode;
+        document.getElementById('sel-title-text').textContent = (mode === 'choice' ? '英翻中：設定' : '中翻英：設定');
+        document.getElementById('config-choice-only').style.display = (mode === 'choice' ? 'block' : 'none');
+        document.getElementById('config-input-only').style.display = (mode === 'input' ? 'block' : 'none');
+        document.getElementById('quiz-config').style.display = 'none';
+        go('p-sel');
     }
 
     function drawSelList() {
-        let html = '';
-        for(let n in db) html += `<button class="db-sel-btn" id="btn-sel-${n}" onclick="prepQuiz('${n}')">${SVG_FOLDER} ${n} (${db[n].length})</button>`;
-        document.getElementById('sel-list').innerHTML = html || '請先建立題庫';
+        const selListEl = document.getElementById('sel-list');
+        selListEl.innerHTML = '';
+        const keys = Object.keys(db);
+        if (keys.length === 0) {
+            selListEl.innerHTML = '<p style="text-align:center; color:var(--text-muted);">請先建立題庫</p>';
+            return;
+        }
+        keys.forEach(n => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'db-sel-btn';
+            btn.innerHTML = `${SVG_SHARD} ${escapeHTML(n)} (${db[n].length})`;
+            btn.addEventListener('click', () => {
+                playCyberSound('click');
+                currentDB = n;
+                selListEl.querySelectorAll('button').forEach(b => b.classList.remove('selected-db'));
+                btn.classList.add('selected-db');
+                document.getElementById('quiz-config').style.display = 'block';
+                document.getElementById('quiz-num-input').value = db[n].length;
+                document.getElementById('pool-info').textContent = `上限：${db[n].length} 題`;
+            });
+            selListEl.appendChild(btn);
+        });
     }
 
     function startQuiz() {
-        let pool = db[currentDB];
-        if(!pool || pool.length < 1) return alert("單字不夠");
-        let limit = parseInt(document.getElementById('quiz-num-input').value) || pool.length;
+        const pool = db[currentDB];
+        if (!pool || pool.length < 1) {
+            playCyberSound('wrong');
+            return showHudNotice("單字量不足，無法啟動測驗", true);
+        }
+
+        const rawLimit = parseInt(document.getElementById('quiz-num-input').value, 10);
+        const limit = Math.min(Math.max(1, rawLimit || pool.length), pool.length);
+
+        const timeRaw = document.getElementById('quiz-time-input').value.trim();
+        const parsedTime = parseInt(timeRaw, 10);
+        lastUsedTime = (!isNaN(parsedTime) && parsedTime > 0) ? String(parsedTime) : "";
+        localStorage.setItem(TIME_PREF_KEY, lastUsedTime);
+
         quizQueue = [...pool].sort(() => 0.5 - Math.random()).slice(0, limit);
-        currentIdx = 0; correctCount = 0; wrongList = [];
-        
+        currentIdx = 0;
+        correctCount = 0;
+        wrongList = [];
+        comboStreak = 0;
+        isAnsweringLocked = false;
+        updateComboHUD();
+
         isMaskActive = (currentGameMode === 'choice' && document.getElementById('mask-toggle').checked);
-        
+
         document.getElementById('ui-choice').style.display = (currentGameMode === 'choice' ? 'block' : 'none');
         document.getElementById('ui-input').style.display = (currentGameMode === 'input' ? 'block' : 'none');
-        go('p-quiz'); renderNextQ();
+
+        document.getElementById('progress-ghost').style.width = '0%';
+        document.getElementById('progress-fill').style.width = '0%';
+
+        go('p-quiz');
+        renderNextQ();
+    }
+
+    function computeFitFontSize(sampleText) {
+        const displayEl = document.getElementById('q-word-display');
+        const boxEl = document.getElementById('quiz-word-box');
+        const prevText = displayEl.textContent;
+        displayEl.textContent = sampleText;
+        displayEl.style.fontSize = '36px';
+        displayEl.style.whiteSpace = 'nowrap';
+        displayEl.style.wordBreak = 'normal';
+
+        const maxWidth = (boxEl.clientWidth || 320) - 32;
+        let currentSize = 36;
+        while (displayEl.scrollWidth > maxWidth && currentSize > 16) {
+            currentSize -= 2;
+            displayEl.style.fontSize = `${currentSize}px`;
+        }
+        const needWrap = displayEl.scrollWidth > maxWidth;
+        displayEl.textContent = prevText;
+        return { fontSize: `${currentSize}px`, needWrap };
+    }
+
+    function cipherScrambleReveal(targetText) {
+        if (scrambleTimer) {
+            clearInterval(scrambleTimer);
+            scrambleTimer = null;
+        }
+        const displayEl = document.getElementById('q-word-display');
+        const { fontSize, needWrap } = computeFitFontSize(targetText);
+        displayEl.style.fontSize = fontSize;
+        displayEl.style.whiteSpace = needWrap ? 'normal' : 'nowrap';
+        displayEl.style.wordBreak = needWrap ? 'break-word' : 'normal';
+
+        const cipherPool = '#X9@K_7$0F%A2&Z8*Q4!';
+        const len = targetText.length;
+        const duration = 280;
+        const intervalMs = 24;
+        const startTime = performance.now();
+
+        scrambleTimer = setInterval(() => {
+            const elapsed = performance.now() - startTime;
+            const progress = Math.min(1, elapsed / duration);
+            const lockedCount = Math.floor(progress * len);
+
+            let out = '';
+            for (let i = 0; i < len; i++) {
+                const ch = targetText[i];
+                if (ch === ' ') {
+                    out += ' ';
+                } else if (i < lockedCount || progress >= 1) {
+                    out += ch;
+                } else {
+                    out += cipherPool[Math.floor(Math.random() * cipherPool.length)];
+                }
+            }
+            displayEl.textContent = out;
+
+            if (progress >= 1) {
+                clearInterval(scrambleTimer);
+                scrambleTimer = null;
+                displayEl.textContent = targetText;
+            }
+        }, intervalMs);
+    }
+
+    function updateDualProgressBar(pct) {
+        const ghostEl = document.getElementById('progress-ghost');
+        const fillEl = document.getElementById('progress-fill');
+        ghostEl.style.width = `${pct}%`;
+        requestAnimationFrame(() => {
+            fillEl.style.width = `${pct}%`;
+        });
     }
 
     function renderNextQ() {
-        if(quizTimer) clearInterval(quizTimer);
-        let q = quizQueue[currentIdx];
-        document.getElementById('q-info').innerText = `題目： ${currentIdx + 1} / ${quizQueue.length}`;
-        document.getElementById('progress-fill').style.width = ((currentIdx+1)/quizQueue.length * 100) + '%';
+        stopAllQuizTimers();
+        isAnsweringLocked = false;
+
+        const q = quizQueue[currentIdx];
+        const padIdx = String(currentIdx + 1).padStart(2, '0');
+        const padTotal = String(quizQueue.length).padStart(2, '0');
+        document.getElementById('q-info').textContent = `SEQ // ${padIdx} / ${padTotal}`;
+
+        const pct = ((currentIdx + 1) / quizQueue.length) * 100;
+        updateDualProgressBar(pct);
+
+        const hintEl = document.getElementById('q-hint-display');
+        hintEl.style.display = 'none';
+        hintEl.textContent = '';
+
         startCountdown(q);
-        if(currentGameMode === 'choice') {
-            document.getElementById('q-word-display').innerText = q.w;
+
+        if (currentGameMode === 'choice') {
+            cipherScrambleReveal(q.w);
             setupChoiceUI(q);
         } else {
-            document.getElementById('q-word-display').innerText = q.m;
+            cipherScrambleReveal(q.m);
             setupInputUI(q);
         }
     }
 
+    /* 整數倒數計時器 + 鑲嵌式能量衰減光條 */
     function startCountdown(q) {
-        let timeLimit = parseInt(document.getElementById('quiz-time-input').value) || 0;
+        const rawSec = parseInt(document.getElementById('quiz-time-input').value, 10);
+        const timeLimit = (!isNaN(rawSec) && rawSec > 0) ? rawSec : 0;
+
         const timerEl = document.getElementById('timer-display');
         const timerSecEl = document.getElementById('timer-sec');
-        if(timeLimit > 0) {
-            let left = timeLimit;
-            timerSecEl.innerText = left; 
+        const barTrack = document.getElementById('depletion-bar-track');
+        const barFill = document.getElementById('depletion-bar-fill');
+
+        if (timeLimit > 0) {
+            const totalMs = timeLimit * 1000;
+            const startTime = performance.now();
+            let lastShownInt = timeLimit;
+
+            timerSecEl.textContent = String(timeLimit);
             timerEl.style.display = 'inline-flex';
-            timerEl.classList.toggle('timer-urgent', left <= 3);
-            quizTimer = setInterval(() => {
-                left--; 
-                timerSecEl.innerText = left;
-                timerEl.classList.toggle('timer-urgent', left <= 3);
-                if(left <= 0) { clearInterval(quizTimer); handleWrong(q); }
-            }, 1000);
-        } else { 
-            timerEl.style.display = 'none'; 
+            barTrack.style.display = 'block';
+            barFill.classList.remove('urgent-pulse');
+            timerEl.classList.toggle('timer-urgent', timeLimit <= 3);
+
+            const tick = (now) => {
+                if (isAnsweringLocked) return;
+                const elapsed = now - startTime;
+                const remainingMs = Math.max(0, totalMs - elapsed);
+                const ratio = remainingMs / totalMs;
+                const intSec = Math.ceil(remainingMs / 1000);
+
+                if (intSec !== lastShownInt) {
+                    lastShownInt = intSec;
+                    timerSecEl.textContent = String(intSec);
+                }
+                barFill.style.transform = `scaleX(${ratio})`;
+
+                if (intSec <= 3) {
+                    barFill.style.background = '#FF2A54';
+                    barFill.style.boxShadow = '0 0 12px #FF2A54';
+                    barFill.classList.add('urgent-pulse');
+                    timerEl.classList.remove('timer-warn');
+                    timerEl.classList.add('timer-urgent');
+                } else if (ratio <= 0.5) {
+                    barFill.style.background = '#FCEE09';
+                    barFill.style.boxShadow = '0 0 10px #FCEE09';
+                    barFill.classList.remove('urgent-pulse');
+                    timerEl.classList.add('timer-warn');
+                    timerEl.classList.remove('timer-urgent');
+                } else {
+                    barFill.style.background = '#00F0FF';
+                    barFill.style.boxShadow = '0 0 10px #00F0FF';
+                    barFill.classList.remove('urgent-pulse');
+                    timerEl.classList.remove('timer-warn', 'timer-urgent');
+                }
+
+                if (remainingMs <= 0) {
+                    countdownRAF = null;
+                    timerSecEl.textContent = '0';
+                    handleWrong(q);
+                } else {
+                    countdownRAF = requestAnimationFrame(tick);
+                }
+            };
+
+            countdownRAF = requestAnimationFrame(tick);
+        } else {
+            timerEl.style.display = 'none';
+            barTrack.style.display = 'none';
         }
     }
 
     function setupChoiceUI(q) {
         document.getElementById('choice-next-box').style.display = 'none';
-        let allM = [...new Set(db[currentDB].map(i => i.m))];
-        let others = allM.filter(m => m !== q.m).sort(() => 0.5 - Math.random()).slice(0, 3);
-        let opts = [...others, q.m].sort(() => 0.5 - Math.random());
-        let html = '';
-        opts.forEach(o => {
-            html += `<button class="option-btn" onclick="checkChoiceAns(this, '${o.replace(/'/g, "\\'")}', '${q.m.replace(/'/g, "\\")}')">${o}</button>`;
+        const allM = [...new Set(db[currentDB].map(i => i.m))];
+        const others = allM.filter(m => m !== q.m).sort(() => 0.5 - Math.random()).slice(0, 3);
+        const opts = [...others, q.m].sort(() => 0.5 - Math.random());
+
+        const optsContainer = document.getElementById('q-options-container');
+        optsContainer.innerHTML = '';
+
+        opts.forEach((optText) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'option-item-wrap';
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'option-btn';
+            btn.dataset.optValue = optText;
+
+            btn.innerHTML = `
+                <span class="opt-label-text">${escapeHTML(optText)}</span>
+                <span class="opt-status-dot"></span>
+            `;
+            btn.addEventListener('click', () => checkChoiceAns(btn, optText, q.m));
+
+            wrap.appendChild(btn);
+            optsContainer.appendChild(wrap);
         });
-        document.getElementById('q-options-container').innerHTML = html;
 
         const maskEl = document.getElementById('q-options-mask');
+        maskEl.classList.remove('decrypting');
         if (isMaskActive) {
+            optsContainer.classList.add('options-hidden');
             maskEl.style.display = 'flex';
         } else {
+            optsContainer.classList.remove('options-hidden');
             maskEl.style.display = 'none';
         }
     }
 
     function revealOptions() {
-        document.getElementById('q-options-mask').style.display = 'none';
+        const maskEl = document.getElementById('q-options-mask');
+        const optsContainer = document.getElementById('q-options-container');
+        if (!maskEl || maskEl.style.display === 'none') return;
+        playCyberSound('decrypt');
+        optsContainer.classList.remove('options-hidden');
+        maskEl.classList.add('decrypting');
+        setTimeout(() => {
+            maskEl.style.display = 'none';
+            maskEl.classList.remove('decrypting');
+        }, 130);
     }
 
     function checkChoiceAns(btn, sel, cor) {
-        if(quizTimer) clearInterval(quizTimer);
-        let q = quizQueue[currentIdx];
-        document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
-        if(sel === cor) {
-            btn.classList.add('correct'); updateStat(q, true);
-            confetti({ particleCount: 40, spread: 50 }); correctCount++;
-            setTimeout(nextQ, 200);
-        } else { btn.classList.add('wrong'); handleWrong(q); }
+        if (isAnsweringLocked) return;
+        isAnsweringLocked = true;
+        if (countdownRAF) {
+            cancelAnimationFrame(countdownRAF);
+            countdownRAF = null;
+        }
+
+        const q = quizQueue[currentIdx];
+        document.querySelectorAll('.option-btn').forEach(b => { b.disabled = true; });
+
+        if (sel === cor) {
+            btn.classList.add('correct');
+            updateStat(q, true);
+            comboStreak++;
+            updateComboHUD();
+            playCyberSound('correct');
+            triggerCorrectExplosion(btn);
+            correctCount++;
+            setTimeout(nextQ, 500);
+        } else {
+            btn.classList.add('wrong');
+            handleWrong(q);
+        }
     }
 
+    /* 填充題首尾提示：僅顯示在題目框下方，中間斜線固定 5 個字元 */
     function setupInputUI(q) {
         document.getElementById('wrong-confirm-box').style.display = 'none';
         document.getElementById('input-zone').style.display = 'block';
+
+        const submitBtn = document.getElementById('input-submit-btn');
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('btn-input-correct');
+
+        const useHint = document.getElementById('hint-toggle').checked;
         const hintEl = document.getElementById('q-hint-display');
-        if(document.getElementById('hint-toggle').checked) {
-            let w = q.w.trim();
-            hintEl.innerText = `${w[0]}_____ ${w[w.length-1]}`;
+        if (useHint) {
+            const w = q.w.trim();
+            if (w.length > 1) {
+                hintEl.textContent = `${w[0]}///// ${w[w.length - 1]}`;
+            } else {
+                hintEl.textContent = `${w}/////`;
+            }
             hintEl.style.display = 'block';
-        } else { hintEl.style.display = 'none'; }
+        } else {
+            hintEl.style.display = 'none';
+            hintEl.textContent = '';
+        }
+
         const inp = document.getElementById('ans-in');
-        inp.value = ""; inp.focus();
-        inp.onkeydown = (e) => { if(e.key === 'Enter') checkInputAns(); };
+        inp.disabled = false;
+        inp.value = "";
+        inp.focus();
     }
 
     function checkInputAns() {
-        if(quizTimer) clearInterval(quizTimer);
-        let q = quizQueue[currentIdx];
-        let user = document.getElementById('ans-in').value.trim().toLowerCase();
-        if(user === q.w.toLowerCase()) {
-            updateStat(q, true); confetti({ particleCount: 40, spread: 50 });
-            correctCount++; nextQ();
-        } else { handleWrong(q); }
+        if (isAnsweringLocked) return;
+        isAnsweringLocked = true;
+        if (countdownRAF) {
+            cancelAnimationFrame(countdownRAF);
+            countdownRAF = null;
+        }
+
+        const q = quizQueue[currentIdx];
+        const inp = document.getElementById('ans-in');
+        const submitBtn = document.getElementById('input-submit-btn');
+        const user = inp.value.trim().toLowerCase();
+
+        if (user === q.w.trim().toLowerCase()) {
+            inp.disabled = true;
+            submitBtn.disabled = true;
+            submitBtn.classList.add('btn-input-correct');
+            updateStat(q, true);
+            comboStreak++;
+            updateComboHUD();
+            playCyberSound('correct');
+            triggerCorrectExplosion(submitBtn);
+            correctCount++;
+            setTimeout(nextQ, 500);
+        } else {
+            handleWrong(q);
+        }
     }
 
     function handleWrong(q) {
-        updateStat(q, false); wrongList.push(q);
-        if(currentGameMode === 'choice') {
+        isAnsweringLocked = true;
+        updateStat(q, false);
+        wrongList.push(q);
+        triggerWrongFeedback();
+
+        if (currentGameMode === 'choice') {
+            document.getElementById('q-options-container').classList.remove('options-hidden');
             document.getElementById('q-options-mask').style.display = 'none';
             document.querySelectorAll('.option-btn').forEach(b => {
-                if(b.innerText === q.m) b.classList.add('correct');
+                if (b.dataset.optValue === q.m) b.classList.add('correct');
                 b.disabled = true;
             });
             document.getElementById('choice-next-box').style.display = 'block';
         } else {
             document.getElementById('input-zone').style.display = 'none';
-            document.getElementById('wrong-msg').innerHTML = `正確答案是：<br><b style="font-size:24px; color:var(--danger);">${q.w}</b>`;
+            document.getElementById('wrong-msg').innerHTML = `正確答案是：<br><b style="font-size:24px; color:var(--arasaka-red);">${escapeHTML(q.w)}</b>`;
             document.getElementById('wrong-confirm-box').style.display = 'block';
         }
     }
 
     function updateStat(item, isCorrect) {
-        if (!item.stats) item.stats = { choice: {t:0, c:0}, input: {t:0, c:0} };
+        if (!item.stats) {
+            item.stats = { choice: { t: 0, c: 0 }, input: { t: 0, c: 0 } };
+        }
         item.stats[currentGameMode].t++;
         if (isCorrect) item.stats[currentGameMode].c++;
         saveDB();
@@ -1343,26 +2883,142 @@
 
     function nextQ() {
         currentIdx++;
-        if(currentIdx < quizQueue.length) renderNextQ();
-        else showResult();
+        if (currentIdx < quizQueue.length) {
+            renderNextQ();
+        } else {
+            showResult();
+        }
     }
 
     function showResult() {
-        document.getElementById('res-total').innerText = quizQueue.length;
-        document.getElementById('res-correct').innerText = correctCount;
-        document.getElementById('res-rate').innerText = Math.round((correctCount / quizQueue.length) * 100) + "%";
-        if(wrongList.length > 0) {
+        const total = quizQueue.length;
+        const targetRate = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+        document.getElementById('res-total').textContent = String(total);
+        document.getElementById('res-correct').textContent = String(correctCount);
+
+        const rankBadge = document.getElementById('hacker-rank-badge');
+        const ringCircle = document.getElementById('sync-ring-circle');
+        const rateNumEl = document.getElementById('res-rate');
+
+        rankBadge.className = 'hacker-rank-badge';
+        let ringColor = '#00F0FF';
+        if (targetRate >= 90) {
+            rankBadge.textContent = 'RANK S // NETRUNNER ELITE';
+            rankBadge.classList.add('rank-s');
+            ringColor = '#FCEE09';
+        } else if (targetRate >= 70) {
+            rankBadge.textContent = 'RANK A // SYSTEM BREACHER';
+            rankBadge.classList.add('rank-a');
+            ringColor = '#00F0FF';
+        } else {
+            rankBadge.textContent = 'RANK C // ROOKIE MERC';
+            rankBadge.classList.add('rank-c');
+            ringColor = '#FF2A54';
+        }
+        ringCircle.style.stroke = ringColor;
+        rateNumEl.style.color = ringColor;
+
+        if (wrongList.length > 0) {
             document.getElementById('res-wrong-section').style.display = 'block';
-            document.getElementById('res-wrong-list').innerText = [...new Set(wrongList.map(i => `${i.w} ${i.m}`))].join('\n');
-        } else { document.getElementById('res-wrong-section').style.display = 'none'; }
+            document.getElementById('res-wrong-list').textContent = [...new Set(wrongList.map(i => `${i.w} ${i.m}`))].join('\n');
+        } else {
+            document.getElementById('res-wrong-section').style.display = 'none';
+        }
+
         go('p-result');
+
+        const circumference = 2 * Math.PI * 56;
+        ringCircle.style.strokeDasharray = `${circumference}`;
+        ringCircle.style.strokeDashoffset = `${circumference}`;
+        rateNumEl.textContent = '0%';
+
+        const animDuration = 850;
+        const startTime = performance.now();
+
+        const animateDiag = (now) => {
+            const elapsed = now - startTime;
+            const t = Math.min(1, elapsed / animDuration);
+            const eased = 1 - Math.pow(1 - t, 3);
+            const currentPct = Math.round(eased * targetRate);
+            const offset = circumference - (circumference * (eased * targetRate)) / 100;
+
+            rateNumEl.textContent = `${currentPct}%`;
+            ringCircle.style.strokeDashoffset = `${offset}`;
+
+            if (t < 1) {
+                diagRAF = requestAnimationFrame(animateDiag);
+            } else {
+                diagRAF = null;
+                rateNumEl.textContent = `${targetRate}%`;
+            }
+        };
+        diagRAF = requestAnimationFrame(animateDiag);
     }
 
-    function copyWrongList() {
-        navigator.clipboard.writeText(document.getElementById('res-wrong-list').innerText).then(() => alert("已複製！"));
+    function initEventBindings() {
+        startTelemetryTicker();
+        initTactileButtonSystem();
+
+        document.getElementById('audio-toggle-btn').addEventListener('click', toggleMute);
+
+        document.getElementById('btn-nav-mode').addEventListener('click', () => { playCyberSound('click'); go('p-mode'); });
+        document.getElementById('btn-nav-mgr').addEventListener('click', () => { playCyberSound('click'); go('p-mgr'); });
+        document.getElementById('btn-nav-help').addEventListener('click', () => { playCyberSound('click'); go('p-help'); });
+        document.getElementById('btn-help-back').addEventListener('click', () => { playCyberSound('click'); go('p-main'); });
+
+        document.getElementById('btn-mode-choice').addEventListener('click', () => { playCyberSound('click'); setGameMode('choice'); });
+        document.getElementById('btn-mode-input').addEventListener('click', () => { playCyberSound('click'); setGameMode('input'); });
+        document.getElementById('btn-mode-back').addEventListener('click', () => { playCyberSound('click'); go('p-main'); });
+
+        document.getElementById('btn-start-quiz').addEventListener('click', () => { playCyberSound('click'); startQuiz(); });
+        document.getElementById('btn-sel-back').addEventListener('click', () => { playCyberSound('click'); go('p-mode'); });
+
+        document.getElementById('q-options-mask').addEventListener('click', revealOptions);
+        document.getElementById('btn-choice-next').addEventListener('click', () => { playCyberSound('click'); nextQ(); });
+        document.getElementById('btn-input-wrong-next').addEventListener('click', () => { playCyberSound('click'); nextQ(); });
+        document.getElementById('input-submit-btn').addEventListener('click', checkInputAns);
+
+        const ansInputEl = document.getElementById('ans-in');
+        ansInputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') checkInputAns();
+        });
+
+        document.getElementById('end-quiz-btn').addEventListener('click', handleEndQuizClick);
+
+        document.getElementById('btn-copy-wrong').addEventListener('click', () => {
+            copyTextSafe(document.getElementById('res-wrong-list').textContent, "已複製錯題！");
+        });
+        document.getElementById('btn-result-home').addEventListener('click', () => { playCyberSound('click'); go('p-main'); });
+
+        document.getElementById('btn-add-db').addEventListener('click', addDB);
+        document.getElementById('btn-export-json').addEventListener('click', exportJSON);
+        document.getElementById('import-file').addEventListener('change', importJSON);
+        document.getElementById('btn-mgr-back').addEventListener('click', () => { playCyberSound('click'); go('p-main'); });
+
+        document.getElementById('save-btn').addEventListener('click', saveWord);
+        document.getElementById('btn-open-batch-import').addEventListener('click', () => { playCyberSound('click'); openBatchUI('import'); });
+        document.getElementById('btn-start-selection').addEventListener('click', () => { playCyberSound('click'); startSelectionMode(); });
+        document.getElementById('btn-sel-all').addEventListener('click', () => toggleSelectAll(true));
+        document.getElementById('btn-sel-none').addEventListener('click', () => toggleSelectAll(false));
+        document.getElementById('btn-sel-confirm').addEventListener('click', finishSelection);
+        document.getElementById('btn-sel-cancel').addEventListener('click', cancelSelection);
+        document.getElementById('batch-submit-btn').addEventListener('click', handleBatchFinish);
+        document.getElementById('batch-copy-btn').addEventListener('click', () => {
+            copyTextSafe(document.getElementById('batch-input').value, "已複製到剪貼簿！");
+        });
+        document.getElementById('btn-batch-cancel').addEventListener('click', () => { playCyberSound('click'); toggleBatch(false); });
+        document.getElementById('edit-exit-btn').addEventListener('click', () => { playCyberSound('click'); go('p-mgr'); });
+
+        drawDBList();
     }
 
-    window.onload = () => { if(Object.keys(db).length > 0) drawDBList(); };
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initEventBindings);
+    } else {
+        initEventBindings();
+    }
+})();
 </script>
 </body>
 </html>
