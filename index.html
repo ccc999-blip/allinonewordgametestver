@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MILITECH // TACTICAL_VOCAB_OS v2.77</title>
+    <title>TACTICAL_OS // NEURAL_VOCAB</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Orbitron:wght@600;700;900&family=Rajdhani:wght@600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
         /* ========================================================
-           1. 克制暗黑軍工終端機色票系統 (MILITECH / ARASAKA OS)
+           1. 克制暗黑軍工終端機色票系統 (TACTICAL_OS // NEURAL_VOCAB)
            ======================================================== */
         :root {
             --bg-abyss: #080A0F;
@@ -25,8 +25,8 @@
 
             --cyber-yellow: #FCEE09;
             --cyber-yellow-dim: rgba(252, 238, 9, 0.25);
-            --arasaka-red: #FF2A54;
-            --arasaka-red-dim: rgba(255, 42, 84, 0.25);
+            --crimson-red: #FF2A54;
+            --crimson-red-dim: rgba(255, 42, 84, 0.25);
             --netrunner-cyan: #00F0FF;
             --netrunner-cyan-dim: rgba(0, 240, 255, 0.25);
 
@@ -41,7 +41,7 @@
         }
 
         body {
-            font-family: 'Rajdhani', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+            font-family: 'Chakra Petch', 'Rajdhani', 'Noto Sans TC', sans-serif;
             background-color: var(--bg-abyss);
             background-image:
                 linear-gradient(rgba(0, 240, 255, 0.025) 1px, transparent 1px),
@@ -55,6 +55,34 @@
             align-items: flex-start;
             justify-content: center;
             position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 極淺背景雷射掃描光波（8s 週期平滑掃過） */
+        @keyframes opticalLaserSweep {
+            0% { transform: translate3d(0, -12vh, 0); opacity: 0.06; }
+            50% { opacity: 0.095; }
+            100% { transform: translate3d(0, 108vh, 0); opacity: 0.06; }
+        }
+        .optical-laser-sweep {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 44px;
+            background: linear-gradient(
+                180deg,
+                transparent 0%,
+                rgba(0, 240, 255, 0.22) 48%,
+                rgba(0, 240, 255, 0.65) 50%,
+                rgba(0, 240, 255, 0.22) 52%,
+                transparent 100%
+            );
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 1;
+            will-change: transform, opacity;
+            animation: opticalLaserSweep 8s linear infinite;
         }
 
         /* 細微 SVG feTurbulence 雜訊顆粒紋理 */
@@ -68,17 +96,35 @@
             opacity: 0.032;
         }
 
-        /* 外層容器承載神經同步外發光 */
+        /* 外層容器承載光學取景器角標與神經同步外發光 */
         .hud-outer-frame {
             width: 100%;
             max-width: 500px;
             margin: auto;
             position: relative;
+            z-index: 5;
+            padding: 6px;
         }
+
+        /* 四角 L 型光學取景器角標 (Viewfinder Brackets) */
+        .viewfinder-bracket {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+            z-index: 25;
+            border-color: rgba(0, 240, 255, 0.5);
+            border-style: solid;
+            border-width: 0;
+        }
+        .vf-tl { top: 0; left: 0; border-top-width: 1px; border-left-width: 1px; }
+        .vf-tr { top: 0; right: 0; border-top-width: 1px; border-right-width: 1px; }
+        .vf-bl { bottom: 0; left: 0; border-bottom-width: 1px; border-left-width: 1px; }
+        .vf-br { bottom: 0; right: 0; border-bottom-width: 1px; border-right-width: 1px; }
 
         @keyframes hudEdgeSyncFlash {
             0% {
-                filter: drop-shadow(0 0 24px rgba(0, 240, 255, 0.7)) drop-shadow(0 0 8px rgba(252, 238, 9, 0.5));
+                filter: drop-shadow(0 0 24px rgba(0, 240, 255, 0.7)) drop-shadow(0 0 8px rgba(0, 240, 255, 0.45));
             }
             100% {
                 filter: drop-shadow(0 0 0 rgba(0, 240, 255, 0));
@@ -92,7 +138,7 @@
         .container {
             width: 100%;
             background: var(--panel-bg);
-            padding: 22px 20px 22px;
+            padding: 20px 18px 20px;
             clip-path: polygon(
                 var(--cut-lg) 0,
                 100% 0,
@@ -102,7 +148,7 @@
                 0 var(--cut-lg)
             );
             border: 1px solid var(--border-metal);
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
             position: relative;
             overflow: hidden;
             transition: border-color 0.15s ease;
@@ -112,35 +158,55 @@
             border-color: var(--netrunner-cyan);
         }
 
-        /* 頂部即時跳動狀態列 */
+        /* 頂部即時跳動狀態列 + 60fps 連續示波器 Canvas + 音效開關 */
         .hud-telemetry-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             font-family: 'Orbitron', monospace;
-            font-size: 9.5px;
-            letter-spacing: 1px;
+            font-size: 9px;
+            letter-spacing: 0.8px;
             color: var(--text-muted);
             margin-bottom: 14px;
             padding-bottom: 8px;
             border-bottom: 1px solid rgba(38, 45, 61, 0.7);
             user-select: none;
+            gap: 8px;
         }
         .telemetry-live {
             color: var(--netrunner-cyan);
-            opacity: 0.85;
+            opacity: 0.88;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            padding-right: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* 60fps 連續神經同步示波器 Canvas */
+        .sparkline-canvas-wrap {
+            width: 96px;
+            height: 24px;
+            flex-shrink: 0;
+            background: rgba(8, 10, 15, 0.85);
+            border: 1px solid rgba(38, 45, 61, 0.95);
+            position: relative;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        #telemetry-sparkline {
+            display: block;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
         }
 
         /* 右上角合成音效開關 */
         #audio-toggle-btn {
             width: auto !important;
-            min-width: 52px;
+            min-width: 50px;
             height: 26px;
-            padding: 0 10px !important;
+            padding: 0 9px !important;
             margin: 0 !important;
             background: var(--surface-dark) !important;
             color: var(--netrunner-cyan) !important;
@@ -150,6 +216,7 @@
             font-family: 'Orbitron', monospace;
             font-size: 10px;
             font-weight: 700;
+            letter-spacing: 1px;
             flex-shrink: 0;
         }
         #audio-toggle-btn.muted {
@@ -167,7 +234,7 @@
             left: 0;
             width: 100%;
             height: 26px;
-            background: linear-gradient(180deg, transparent, rgba(0, 240, 255, 0.3), rgba(252, 238, 9, 0.45), transparent);
+            background: linear-gradient(180deg, transparent, rgba(0, 240, 255, 0.3), rgba(0, 240, 255, 0.45), transparent);
             pointer-events: none;
             z-index: 40;
             animation: scanlineSweep 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -198,20 +265,22 @@
 
         /* 標題與精密 HUD 動態雷達核心 */
         h2 {
-            font-family: 'Orbitron', 'Noto Sans TC', sans-serif;
+            font-family: 'Chakra Petch', 'Orbitron', 'Noto Sans TC', sans-serif;
             border-bottom: 1px solid var(--border-metal);
             padding-bottom: 12px;
             margin-top: 0;
             margin-bottom: 16px;
             color: var(--text-main);
             text-align: center;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             text-transform: uppercase;
             font-size: 18px;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.28);
         }
 
         .radar-hero-header {
@@ -268,12 +337,13 @@
             margin-bottom: 2px;
         }
         .brand-main-title {
-            font-family: 'Orbitron', 'Noto Sans TC', sans-serif;
-            font-size: 24px;
-            font-weight: 900;
+            font-family: 'Chakra Petch', 'Orbitron', 'Noto Sans TC', sans-serif;
+            font-size: 23px;
+            font-weight: 700;
             letter-spacing: 1.5px;
             color: var(--text-main);
-            line-height: 1.1;
+            line-height: 1.15;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.28);
         }
 
         p, label {
@@ -281,16 +351,21 @@
             color: var(--text-main);
             display: block;
             margin-bottom: 8px;
-            letter-spacing: 0.4px;
+            letter-spacing: 0.6px;
         }
 
         /* ========================================================
-           2. 克制暗黑軍工按鍵 ＋ 物理級阻尼與水波紋回饋系統
+           2. 克制暗黑軍工按鍵 ＋ 雙層微光角點 ＋ 物理阻尼水波紋
            ======================================================== */
         @keyframes springRelease {
             0% { transform: scale(0.965); }
             55% { transform: scale(1.015); }
             100% { transform: scale(1); }
+        }
+
+        @keyframes borderCurrentSheen {
+            0% { transform: translateX(-110%); opacity: 0.9; }
+            100% { transform: translateX(110%); opacity: 0; }
         }
 
         button {
@@ -302,6 +377,7 @@
             border: 1px solid var(--border-metal);
             border-left: 4px solid var(--netrunner-cyan);
             border-radius: 0;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
             clip-path: polygon(
                 0 0,
                 calc(100% - var(--cut-md)) 0,
@@ -310,10 +386,10 @@
                 var(--cut-sm) 100%,
                 0 calc(100% - var(--cut-sm))
             );
-            font-family: 'Rajdhani', 'Noto Sans TC', sans-serif;
+            font-family: 'Chakra Petch', 'Orbitron', 'Noto Sans TC', sans-serif;
             font-size: 17px;
             font-weight: 700;
-            letter-spacing: 0.6px;
+            letter-spacing: 1.5px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -326,14 +402,55 @@
             transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.15s ease, border-color 0.15s ease, filter 0.15s ease;
         }
 
+        .btn-micro-dot {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(0, 240, 255, 0.45);
+            pointer-events: none;
+            z-index: 4;
+            transition: background-color 0.12s ease, transform 0.12s ease;
+        }
+        .btn-micro-dot.dot-left {
+            left: 7px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .btn-micro-dot.dot-right {
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .btn-edge-sheen {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--netrunner-cyan), #FFFFFF, var(--netrunner-cyan), transparent);
+            pointer-events: none;
+            z-index: 5;
+            animation: borderCurrentSheen 0.28s ease-out forwards;
+        }
+
         button:hover:not(:disabled) {
             background: var(--surface-hover);
             border-color: var(--border-bright);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+        button:hover:not(:disabled) .btn-micro-dot {
+            background: rgba(0, 240, 255, 0.85);
         }
 
         button.is-pressing:not(:disabled) {
             transform: scale(0.965) !important;
-            filter: brightness(0.86);
+            filter: brightness(0.9);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+        }
+        button.is-pressing:not(:disabled) .btn-micro-dot {
+            background: #FFFFFF !important;
+            transform: translateY(-50%) scale(1.4);
         }
 
         button.is-releasing:not(:disabled) {
@@ -364,47 +481,54 @@
             animation: tactileRippleAnim 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
+        /* 機能配色階層：主行動鍵賽博黃 */
         .btn-primary,
         .btn-dark {
             background: linear-gradient(90deg, rgba(252, 238, 9, 0.12) 0%, #131720 45%) !important;
             color: var(--cyber-yellow) !important;
             border: 1px solid var(--cyber-yellow) !important;
             border-left: 4px solid var(--cyber-yellow) !important;
-            box-shadow: 0 0 16px rgba(252, 238, 9, 0.14), inset 0 0 12px rgba(252, 238, 9, 0.06);
-            font-weight: 900;
+            box-shadow: 0 0 16px rgba(252, 238, 9, 0.14), inset 0 0 0 1px rgba(252, 238, 9, 0.12);
+            font-weight: 700;
+        }
+        .btn-primary .btn-micro-dot,
+        .btn-dark .btn-micro-dot {
+            background: rgba(252, 238, 9, 0.65);
         }
         .btn-primary:hover:not(:disabled),
         .btn-dark:hover:not(:disabled) {
             background: linear-gradient(90deg, rgba(252, 238, 9, 0.2) 0%, #181E2B 55%) !important;
-            box-shadow: 0 0 22px rgba(252, 238, 9, 0.24), inset 0 0 14px rgba(252, 238, 9, 0.1);
+            box-shadow: 0 0 22px rgba(252, 238, 9, 0.24), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
         }
 
+        /* 一般功能與確認選取：電子青 */
         .btn-success {
             background: linear-gradient(90deg, rgba(0, 240, 255, 0.12) 0%, #131720 45%) !important;
             color: var(--netrunner-cyan) !important;
             border: 1px solid var(--netrunner-cyan) !important;
             border-left: 4px solid var(--netrunner-cyan) !important;
-            box-shadow: 0 0 16px rgba(0, 240, 255, 0.14), inset 0 0 12px rgba(0, 240, 255, 0.06);
-            font-weight: 900;
+            box-shadow: 0 0 16px rgba(0, 240, 255, 0.14), inset 0 0 0 1px rgba(0, 240, 255, 0.12);
+            font-weight: 700;
         }
 
+        /* 說明 / 危險 / 警報：故障紅 */
         .btn-warning,
         .btn-danger {
             background: linear-gradient(90deg, rgba(255, 42, 84, 0.14) 0%, #131720 45%) !important;
-            color: var(--arasaka-red) !important;
-            border: 1px solid var(--arasaka-red) !important;
-            border-left: 4px solid var(--arasaka-red) !important;
-            box-shadow: 0 0 14px rgba(255, 42, 84, 0.14);
-            font-weight: 900;
+            color: var(--crimson-red) !important;
+            border: 1px solid var(--crimson-red) !important;
+            border-left: 4px solid var(--crimson-red) !important;
+            box-shadow: 0 0 14px rgba(255, 42, 84, 0.14), inset 0 0 0 1px rgba(255, 42, 84, 0.12);
+            font-weight: 700;
+        }
+        .btn-warning .btn-micro-dot,
+        .btn-danger .btn-micro-dot {
+            background: rgba(255, 42, 84, 0.7);
         }
 
-        .btn-outline-primary {
-            border-left: 4px solid var(--netrunner-cyan) !important;
-            color: var(--text-main) !important;
-        }
-
+        .btn-outline-primary,
         .btn-outline-success {
-            border-left: 4px solid var(--cyber-yellow) !important;
+            border-left: 4px solid var(--netrunner-cyan) !important;
             color: var(--text-main) !important;
         }
 
@@ -412,7 +536,11 @@
             background: transparent !important;
             border: 1px solid transparent !important;
             border-left: 1px solid transparent !important;
+            box-shadow: none !important;
             color: var(--text-muted) !important;
+        }
+        .btn-ghost .btn-micro-dot {
+            display: none;
         }
         .btn-ghost:hover:not(:disabled) {
             color: var(--text-main) !important;
@@ -426,14 +554,14 @@
         .btn-abort-armed {
             background: rgba(255, 42, 84, 0.22) !important;
             color: #FFFFFF !important;
-            border: 1px solid var(--arasaka-red) !important;
-            border-left: 4px solid var(--cyber-yellow) !important;
-            font-weight: 900 !important;
+            border: 1px solid var(--crimson-red) !important;
+            border-left: 4px solid var(--crimson-red) !important;
+            font-weight: 700 !important;
             animation: abortPulse 0.65s infinite;
         }
 
         /* ========================================================
-           3. 選項按鈕（純淨答案文字 + 狀態點，無前方編號）
+           3. 選項按鈕：統一電子青左側色條 + 純淨答案文字
            ======================================================== */
         .option-item-wrap,
         .action-burst-wrap {
@@ -449,24 +577,25 @@
         .option-btn {
             background: var(--surface-dark);
             border: 1px solid var(--border-metal);
-            border-left: 4px solid var(--netrunner-cyan);
+            border-left: 4px solid var(--netrunner-cyan) !important;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
             color: var(--text-main);
-            padding: 15px 16px;
+            padding: 15px 18px;
             justify-content: space-between;
             text-align: left;
             overflow: hidden;
         }
-        .option-btn:nth-child(even) {
-            border-left-color: var(--cyber-yellow);
-        }
 
         .opt-label-text {
+            font-family: 'Chakra Petch', 'Noto Sans TC', sans-serif;
             font-size: 17px;
             font-weight: 700;
+            letter-spacing: 1.5px;
             color: var(--text-main);
             word-break: break-word;
             line-height: 1.3;
             flex: 1;
+            padding-left: 8px;
             pointer-events: none;
         }
 
@@ -476,11 +605,12 @@
             background: var(--border-bright);
             flex-shrink: 0;
             margin-left: 10px;
+            margin-right: 8px;
             pointer-events: none;
             transition: background-color 0.15s ease, box-shadow 0.15s ease;
         }
 
-        /* 答對 4 層疊加爆發特效 */
+        /* 答對 4 層疊加爆發特效（電子青主導） */
         @keyframes circuitOverload {
             0% {
                 background: #FFFFFF;
@@ -517,12 +647,13 @@
         .option-btn.correct,
         .btn-input-correct {
             animation: circuitOverload 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
-            font-weight: 900 !important;
-            box-shadow: 0 0 18px rgba(0, 240, 255, 0.7), 2px 0 rgba(252, 238, 9, 0.65), -2px 0 rgba(0, 240, 255, 0.75) !important;
+            border-left-color: var(--cyber-black) !important;
+            font-weight: 700 !important;
+            box-shadow: 0 0 18px rgba(0, 240, 255, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.25) !important;
         }
         .option-btn.correct .opt-label-text {
             color: var(--cyber-black) !important;
-            font-weight: 900 !important;
+            font-weight: 700 !important;
         }
         .option-btn.correct .opt-status-dot {
             background: var(--cyber-black) !important;
@@ -547,7 +678,7 @@
                 opacity: 1;
                 transform: scale(1, 1);
                 border-color: #FFFFFF;
-                box-shadow: 0 0 14px var(--netrunner-cyan), inset 0 0 8px var(--cyber-yellow);
+                box-shadow: 0 0 14px var(--netrunner-cyan), inset 0 0 8px rgba(0, 240, 255, 0.5);
             }
             35% {
                 border-color: var(--netrunner-cyan);
@@ -564,7 +695,7 @@
             position: absolute;
             inset: 0;
             border: 2px solid var(--netrunner-cyan);
-            outline: 1px solid var(--cyber-yellow);
+            outline: 1px solid rgba(0, 240, 255, 0.45);
             outline-offset: 3px;
             clip-path: polygon(
                 0 0,
@@ -596,7 +727,7 @@
             letter-spacing: 1px;
             padding: 3px 8px;
             background: var(--cyber-black);
-            color: var(--cyber-yellow);
+            color: var(--netrunner-cyan);
             border: 1px solid var(--netrunner-cyan);
             box-shadow: 0 0 12px rgba(0, 240, 255, 0.55);
             pointer-events: none;
@@ -628,25 +759,25 @@
         }
 
         @keyframes rgbGlitchText {
-            0% { text-shadow: 2px 0 var(--arasaka-red), -2px 0 var(--netrunner-cyan); }
-            50% { text-shadow: -2px 0 var(--arasaka-red), 2px 0 var(--netrunner-cyan); }
-            100% { text-shadow: 1px 0 var(--arasaka-red), -1px 0 var(--netrunner-cyan); }
+            0% { text-shadow: 2px 0 var(--crimson-red), -2px 0 var(--netrunner-cyan); }
+            50% { text-shadow: -2px 0 var(--crimson-red), 2px 0 var(--netrunner-cyan); }
+            100% { text-shadow: 1px 0 var(--crimson-red), -1px 0 var(--netrunner-cyan); }
         }
 
         .option-btn.wrong {
             background: rgba(255, 42, 84, 0.25) !important;
             color: #FFFFFF !important;
-            border-color: var(--arasaka-red) !important;
-            border-left-color: var(--arasaka-red) !important;
+            border-color: var(--crimson-red) !important;
+            border-left-color: var(--crimson-red) !important;
             animation: rgbGlitchText 0.22s infinite;
         }
         .option-btn.wrong .opt-status-dot {
-            background: var(--arasaka-red) !important;
-            box-shadow: 0 0 8px var(--arasaka-red);
+            background: var(--crimson-red) !important;
+            box-shadow: 0 0 8px var(--crimson-red);
         }
 
         /* ========================================================
-           4. 雙層慣性阻尼進度條 ＋ 整數倒數計時與能量衰減光條
+           4. 雙層慣性阻尼進度條 ＋ 整數倒數計時 ＋ 聲波頻譜
            ======================================================== */
         .progress-bar {
             width: 100%;
@@ -689,11 +820,11 @@
         }
 
         #q-info {
-            font-family: 'Orbitron', 'Noto Sans TC', monospace;
+            font-family: 'Orbitron', 'Chakra Petch', monospace;
             font-weight: 700;
             font-size: 13px;
             color: var(--text-muted);
-            letter-spacing: 0.8px;
+            letter-spacing: 1.5px;
         }
 
         #timer-display {
@@ -722,8 +853,8 @@
         #timer-display.timer-urgent {
             color: #FFFFFF;
             background: rgba(255, 42, 84, 0.28);
-            border-color: var(--arasaka-red);
-            border-left-color: var(--arasaka-red);
+            border-color: var(--crimson-red);
+            border-left-color: var(--crimson-red);
             animation: alarmBlink 0.42s infinite;
         }
 
@@ -748,10 +879,41 @@
                 0 var(--cut-md)
             );
             position: relative;
+            overflow: hidden;
         }
         .quiz-word-container.word-glitch {
-            border-color: var(--arasaka-red);
+            border-color: var(--crimson-red);
             animation: rgbGlitchText 0.25s linear;
+        }
+
+        /* 單字框底層動態聲波頻譜 (#quiz-eq-bars) */
+        .eq-bg-wrap {
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: 8px;
+            height: 28px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 3px;
+            opacity: 0.14;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .eq-bar-item {
+            flex: 1;
+            height: 100%;
+            background: var(--netrunner-cyan);
+            transform-origin: bottom center;
+            transform: scaleY(0.28);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease;
+            pointer-events: none;
+        }
+        .eq-bg-wrap.eq-surge .eq-bar-item {
+            background: var(--cyber-yellow);
+            transform: scaleY(var(--eq-peak, 0.92));
+            transition: transform 0.09s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.1s ease;
         }
 
         .depletion-bar-track {
@@ -765,6 +927,7 @@
             display: none;
             overflow: hidden;
             z-index: 5;
+            pointer-events: none;
         }
         #depletion-bar-fill {
             height: 100%;
@@ -799,7 +962,7 @@
             line-height: 1.1;
         }
         .combo-sub-label {
-            font-family: 'Orbitron', 'Noto Sans TC', monospace;
+            font-family: 'Orbitron', 'Chakra Petch', monospace;
             font-size: 8.5px;
             font-weight: 700;
             color: var(--netrunner-cyan);
@@ -817,22 +980,27 @@
         }
 
         .quiz-word {
-            font-family: 'Orbitron', 'Rajdhani', 'Noto Sans TC', sans-serif;
+            font-family: 'Chakra Petch', 'Orbitron', 'Noto Sans TC', sans-serif;
             font-size: 36px;
             color: var(--text-main);
-            font-weight: 900;
+            font-weight: 700;
             line-height: 1.25;
             max-width: 100%;
-            letter-spacing: 0.5px;
+            letter-spacing: 1.5px;
+            position: relative;
+            z-index: 3;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.28);
         }
 
         .scaffold-text {
-            font-family: 'Orbitron', monospace;
+            font-family: 'Chakra Petch', 'Orbitron', monospace;
             font-size: 20px;
             color: var(--cyber-yellow);
-            letter-spacing: 3px;
-            font-weight: 900;
+            letter-spacing: 2px;
+            font-weight: 700;
             margin-top: 10px;
+            position: relative;
+            z-index: 3;
         }
 
         /* ========================================================
@@ -872,13 +1040,13 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            font-family: 'Orbitron', 'Noto Sans TC', sans-serif;
+            font-family: 'Chakra Petch', 'Orbitron', 'Noto Sans TC', sans-serif;
             font-size: 15px;
-            font-weight: 900;
+            font-weight: 700;
             color: var(--cyber-yellow);
             z-index: 20;
-            border: 1px solid var(--arasaka-red);
-            border-left: 4px solid var(--arasaka-red);
+            border: 1px solid var(--crimson-red);
+            border-left: 4px solid var(--crimson-red);
             cursor: pointer;
             user-select: none;
         }
@@ -903,8 +1071,8 @@
             align-items: center;
             gap: 8px;
             font-size: 13px;
-            font-weight: 900;
-            letter-spacing: 0.8px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
         }
 
         /* ========================================================
@@ -968,7 +1136,7 @@
             font-family: 'Orbitron', monospace;
             font-size: 12px;
             font-weight: 900;
-            letter-spacing: 1.2px;
+            letter-spacing: 1.5px;
             padding: 6px 14px;
             border: 1px solid var(--cyber-yellow);
             background: rgba(252, 238, 9, 0.08);
@@ -989,8 +1157,8 @@
             box-shadow: 0 0 14px rgba(0, 240, 255, 0.18);
         }
         .hacker-rank-badge.rank-c {
-            border-color: var(--arasaka-red);
-            color: var(--arasaka-red);
+            border-color: var(--crimson-red);
+            color: var(--crimson-red);
             background: rgba(255, 42, 84, 0.1);
         }
 
@@ -1033,7 +1201,7 @@
             border: 1px solid var(--border-metal);
             border-left: 3px solid var(--border-bright);
             border-radius: 0;
-            font-family: 'Rajdhani', 'Noto Sans TC', sans-serif;
+            font-family: 'Chakra Petch', 'Orbitron', 'Noto Sans TC', sans-serif;
             font-size: 17px;
             font-weight: 700;
             background: var(--surface-dark);
@@ -1072,7 +1240,7 @@
             background: rgba(252, 238, 9, 0.12);
         }
         .word-text {
-            font-weight: 800;
+            font-weight: 700;
             font-size: 17px;
             color: var(--text-main);
             display: block;
@@ -1135,9 +1303,9 @@
             font-size: 14px;
             margin-bottom: 0;
             background: var(--surface-dark);
-            color: var(--arasaka-red);
-            border: 1px solid var(--arasaka-red);
-            border-left: 3px solid var(--arasaka-red);
+            color: var(--crimson-red);
+            border: 1px solid var(--crimson-red);
+            border-left: 3px solid var(--crimson-red);
             clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
             flex-shrink: 0;
         }
@@ -1153,7 +1321,7 @@
             color: #FFFFFF !important;
             border-color: var(--cyber-yellow) !important;
             font-size: 12px !important;
-            font-weight: 900 !important;
+            font-weight: 700 !important;
         }
 
         .inline-rename-wrap {
@@ -1176,7 +1344,7 @@
             font-size: 13px !important;
             color: var(--netrunner-cyan) !important;
             border-color: var(--netrunner-cyan) !important;
-            font-weight: 900 !important;
+            font-weight: 700 !important;
         }
         .btn-mini-cancel {
             width: auto !important;
@@ -1188,16 +1356,16 @@
         #wrong-confirm-box {
             display: none;
             background: rgba(255, 42, 84, 0.08);
-            border: 1px solid var(--arasaka-red);
-            border-left: 4px solid var(--arasaka-red);
+            border: 1px solid var(--crimson-red);
+            border-left: 4px solid var(--crimson-red);
             padding: 16px;
             margin-bottom: 16px;
             text-align: center;
         }
         .wrong-list-area {
             background: var(--cyber-black);
-            border: 1px solid var(--arasaka-red);
-            border-left: 3px solid var(--arasaka-red);
+            border: 1px solid var(--crimson-red);
+            border-left: 3px solid var(--crimson-red);
             padding: 12px;
             max-height: 180px;
             overflow-y: auto;
@@ -1211,9 +1379,10 @@
         .help-content { line-height: 1.7; font-size: 15px; text-align: left; margin-bottom: 20px; color: var(--text-main); }
         .help-content h3 {
             color: var(--netrunner-cyan);
-            border-left: 3px solid var(--cyber-yellow);
+            border-left: 3px solid var(--crimson-red);
             padding-left: 10px;
-            font-weight: 900;
+            font-weight: 700;
+            letter-spacing: 1.5px;
         }
         .help-content code {
             background: var(--surface-dark);
@@ -1236,7 +1405,7 @@
             border: 1px solid var(--netrunner-cyan);
             border-left: 4px solid var(--cyber-yellow);
             padding: 11px 15px;
-            font-family: 'Rajdhani', 'Noto Sans TC', sans-serif;
+            font-family: 'Chakra Petch', 'Noto Sans TC', sans-serif;
             font-size: 15px;
             font-weight: 700;
             line-height: 1.45;
@@ -1253,8 +1422,8 @@
         }
         #hud-toast-banner.toast-warn {
             color: var(--cyber-yellow);
-            border-color: var(--arasaka-red);
-            border-left-color: var(--arasaka-red);
+            border-color: var(--crimson-red);
+            border-left-color: var(--crimson-red);
         }
 
         .svg-icon {
@@ -1266,6 +1435,9 @@
     </style>
 </head>
 <body>
+
+<!-- 極淺背景雷射掃描光波 -->
+<div class="optical-laser-sweep" aria-hidden="true"></div>
 
 <!-- SVG feTurbulence 細微顆粒雜訊紋理層 -->
 <svg class="noise-overlay" xmlns="http://www.w3.org/2000/svg">
@@ -1279,10 +1451,19 @@
 <div id="hud-toast-banner" role="status" aria-live="polite"></div>
 
 <div class="hud-outer-frame" id="hud-outer-frame">
+    <!-- 四角 L 型光學取景器角標 -->
+    <div class="viewfinder-bracket vf-tl" aria-hidden="true"></div>
+    <div class="viewfinder-bracket vf-tr" aria-hidden="true"></div>
+    <div class="viewfinder-bracket vf-bl" aria-hidden="true"></div>
+    <div class="viewfinder-bracket vf-br" aria-hidden="true"></div>
+
     <div class="container" id="main-hud-container">
-        <!-- 頂部即時跳動狀態列 + 音效開關 -->
+        <!-- 頂部即時跳動狀態列 + 60fps 連續示波器 Canvas + 音效開關 -->
         <div class="hud-telemetry-bar">
             <span class="telemetry-live" id="telemetry-text">MEM: 0x4F2A // NEURAL_LINK: STABLE</span>
+            <div class="sparkline-canvas-wrap" aria-hidden="true">
+                <canvas id="telemetry-sparkline" width="96" height="24"></canvas>
+            </div>
             <button type="button" id="audio-toggle-btn" title="切換合成音效">SFX</button>
         </div>
 
@@ -1308,7 +1489,7 @@
                     <rect class="wave-bar" x="40.5" y="26" width="2.5" height="12" fill="#FF2A54"/>
                 </svg>
                 <div class="brand-title-block">
-                    <span class="brand-sub-tag">MILITECH // TACTICAL_OS</span>
+                    <span class="brand-sub-tag">TACTICAL_OS // NEURAL_VOCAB</span>
                     <span class="brand-main-title">ALL IN ONE</span>
                 </div>
             </div>
@@ -1330,7 +1511,7 @@
         <!-- 2. 遊戲功能說明頁面 -->
         <div id="p-help" class="page">
             <h2>
-                <svg class="svg-icon" style="color:var(--cyber-yellow);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/></svg>
+                <svg class="svg-icon" style="color:var(--crimson-red);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/></svg>
                 深度使用指南與設計邏輯
             </h2>
             <div class="help-content">
@@ -1395,10 +1576,10 @@
                 英翻中選擇 // RECOGNITION
             </button>
             <button type="button" id="btn-mode-input" class="btn-outline-success">
-                <svg class="svg-icon" style="color:var(--cyber-yellow);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5l4 4L7 21H3v-4L16.5 3.5z"/></svg>
+                <svg class="svg-icon" style="color:var(--netrunner-cyan);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5l4 4L7 21H3v-4L16.5 3.5z"/></svg>
                 中翻英填充 // RECALL
             </button>
-            <button type="button" id="btn-mode-back" style="margin-top: 10px; font-size: 15px; border-left-color: var(--border-bright);">返回主畫面</button>
+            <button type="button" id="btn-mode-back" style="margin-top: 10px; font-size: 15px; border-left-color: var(--netrunner-cyan);">返回主畫面</button>
         </div>
 
         <!-- 4. 測驗設定頁面 -->
@@ -1411,19 +1592,19 @@
                 <label for="quiz-time-input">2. 每題時間 (秒) // 留空或 0 為不計時：</label>
                 <input type="number" id="quiz-time-input" min="0" inputmode="numeric" placeholder="手動輸入秒數啟用計時">
                 <div id="config-choice-only" style="display:none; margin-bottom: 12px;">
-                    <label style="display: flex; align-items: center; background: var(--surface-dark); padding: 12px; border: 1px solid var(--border-metal); border-left: 3px solid var(--arasaka-red); cursor: pointer;">
-                        <input type="checkbox" id="mask-toggle" checked style="width: 20px; height: 20px; margin-right: 12px; margin-bottom: 0; accent-color: var(--cyber-yellow);"> 遮蓋選項（加密盲測模式）
+                    <label style="display: flex; align-items: center; background: var(--surface-dark); padding: 12px; border: 1px solid var(--border-metal); border-left: 3px solid var(--netrunner-cyan); cursor: pointer;">
+                        <input type="checkbox" id="mask-toggle" checked style="width: 20px; height: 20px; margin-right: 12px; margin-bottom: 0; accent-color: var(--netrunner-cyan);"> 遮蓋選項（加密盲測模式）
                     </label>
                 </div>
                 <div id="config-input-only" style="display:none; margin-bottom: 12px;">
-                    <label style="display: flex; align-items: center; background: var(--surface-dark); padding: 12px; border: 1px solid var(--border-metal); border-left: 3px solid var(--cyber-yellow); cursor: pointer;">
-                        <input type="checkbox" id="hint-toggle" style="width: 20px; height: 20px; margin-right: 12px; margin-bottom: 0; accent-color: var(--cyber-yellow);"> 開啟首尾提示
+                    <label style="display: flex; align-items: center; background: var(--surface-dark); padding: 12px; border: 1px solid var(--border-metal); border-left: 3px solid var(--netrunner-cyan); cursor: pointer;">
+                        <input type="checkbox" id="hint-toggle" style="width: 20px; height: 20px; margin-right: 12px; margin-bottom: 0; accent-color: var(--netrunner-cyan);"> 開啟首尾提示
                     </label>
                 </div>
                 <p id="pool-info" style="font-size:13px; color:var(--text-muted); margin-top: 4px;"></p>
                 <button type="button" id="btn-start-quiz" class="btn-primary">確認開始 // EXECUTE</button>
             </div>
-            <button type="button" id="btn-sel-back" style="margin-top:8px; border-left-color: var(--border-bright);">返回</button>
+            <button type="button" id="btn-sel-back" style="margin-top:8px; border-left-color: var(--netrunner-cyan);">返回</button>
         </div>
 
         <!-- 5. 測驗進行中頁面 -->
@@ -1445,6 +1626,22 @@
             </div>
 
             <div class="quiz-word-container" id="quiz-word-box">
+                <!-- 底層動態聲波頻譜 (#quiz-eq-bars) -->
+                <div class="eq-bg-wrap" id="quiz-eq-bars" aria-hidden="true">
+                    <span class="eq-bar-item" style="--eq-peak:0.65;"></span>
+                    <span class="eq-bar-item" style="--eq-peak:0.85;"></span>
+                    <span class="eq-bar-item" style="--eq-peak:0.55;"></span>
+                    <span class="eq-bar-item" style="--eq-peak:0.95;"></span>
+                    <span class="eq-bar-item" style="--eq-peak:0.75;"></span>
+                    <span class="eq-bar-item" style="--eq-peak:1.0;"></span>
+                    <span class="eq-bar-item" style="--eq-peak:0.8;"></span>
+                    <span class="eq-bar-item" style="--eq-peak:0.9;"></span>
+                    <span class="eq-bar-item" style="--eq-peak:0.6;"></span>
+                    <span class="eq-bar-item" style="--eq-peak:0.88;"></span>
+                    <span class="eq-bar-item" style="--eq-peak:0.7;"></span>
+                    <span class="eq-bar-item" style="--eq-peak:0.5;"></span>
+                </div>
+
                 <div id="combo-hud">
                     <span class="combo-main-badge" id="combo-main-text">COMBO x2</span>
                     <span class="combo-sub-label">CRITICAL HIT // 數據同步</span>
@@ -1530,7 +1727,7 @@
 
             <div id="res-wrong-section" style="display:none; margin-bottom: 14px;">
                 <div id="res-wrong-list" class="wrong-list-area"></div>
-                <button type="button" id="btn-copy-wrong" style="margin-top:10px; border-left-color: var(--arasaka-red);">
+                <button type="button" id="btn-copy-wrong" style="margin-top:10px; border-left-color: var(--crimson-red);">
                     <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13"/><path d="M5 15H4V4h11v1"/></svg>
                     複製錯題清單
                 </button>
@@ -1554,7 +1751,7 @@
                 </button>
                 <input type="file" id="import-file" accept=".json" style="font-size:13px; margin-top:4px; margin-bottom:0; padding: 10px;">
             </div>
-            <button type="button" id="btn-mgr-back" style="margin-top: 14px; border-left-color: var(--border-bright);">返回</button>
+            <button type="button" id="btn-mgr-back" style="margin-top: 14px; border-left-color: var(--netrunner-cyan);">返回</button>
         </div>
 
         <!-- 8. 題庫單字編輯頁面 -->
@@ -1575,7 +1772,7 @@
                         <svg class="svg-icon" style="width:17px; height:17px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 15V3"/><polyline points="7,8 12,3 17,8"/><path d="M4 17v4h16v-4"/></svg>
                         批次匯入
                     </button>
-                    <button type="button" id="btn-start-selection" style="font-size:14px; flex:1; padding: 12px; border-left-color: var(--cyber-yellow);">
+                    <button type="button" id="btn-start-selection" style="font-size:14px; flex:1; padding: 12px; border-left-color: var(--netrunner-cyan);">
                         <svg class="svg-icon" style="width:17px; height:17px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><polyline points="7,10 12,15 17,10"/><path d="M4 17v4h16v-4"/></svg>
                         批次匯出
                     </button>
@@ -1586,7 +1783,7 @@
                 <button type="button" id="btn-sel-all" style="padding:10px 8px; font-size:13px; flex:1; margin-bottom:0;">全選</button>
                 <button type="button" id="btn-sel-none" style="padding:10px 8px; font-size:13px; flex:1; margin-bottom:0;">全不選</button>
                 <button type="button" id="btn-sel-confirm" class="btn-success" style="padding:10px 8px; font-size:13px; flex:1; margin-bottom:0;">確認選取</button>
-                <button type="button" id="btn-sel-cancel" style="padding:10px 8px; font-size:13px; flex:1; margin-bottom:0; border-left-color: var(--border-bright); color:var(--text-muted);">取消</button>
+                <button type="button" id="btn-sel-cancel" style="padding:10px 8px; font-size:13px; flex:1; margin-bottom:0; border-left-color: var(--netrunner-cyan); color:var(--text-muted);">取消</button>
             </div>
 
             <div id="batch-edit-area" style="display:none; background:var(--surface-dark); border: 1px solid var(--netrunner-cyan); padding:16px; margin-top:12px;">
@@ -1603,7 +1800,7 @@
             </div>
 
             <div id="word-list-container" style="max-height:400px; overflow-y:auto; margin-top:14px; border:1px solid var(--border-metal); padding: 6px; background: var(--cyber-black);"></div>
-            <button type="button" id="edit-exit-btn" style="margin-top:14px; border-left-color: var(--border-bright);">離開編輯</button>
+            <button type="button" id="edit-exit-btn" style="margin-top:14px; border-left-color: var(--netrunner-cyan);">離開編輯</button>
         </div>
     </div>
 </div>
@@ -1613,7 +1810,6 @@
     'use strict';
 
     const STORAGE_KEY = 'pro_v_db_v3';
-    const TIME_PREF_KEY = 'pro_v_last_time';
 
     let db = {};
     try {
@@ -1640,7 +1836,8 @@
     let quizQueue = [];
     let currentIdx = 0;
     let countdownRAF = null;
-    let scrambleTimer = null;
+    let scrambleRAF = null;
+    let currentScrambleId = 0;
     let diagRAF = null;
     let correctCount = 0;
     let wrongList = [];
@@ -1649,17 +1846,30 @@
     let comboStreak = 0;
     let isMuted = false;
     let audioCtx = null;
+    let noiseBuffer = null;
     let isAnsweringLocked = false;
     let syncLabelToggle = false;
-    let lastUsedTime = localStorage.getItem(TIME_PREF_KEY) || "";
     let endQuizArmed = false;
     let endQuizResetTimer = null;
     let toastHideTimer = null;
+    let eqIdleRAF = null;
+    let eqSurgeTimer = null;
 
-    const SVG_SHARD = `<svg class="svg-icon" style="color:var(--cyber-yellow); margin-right:6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5,3 17,3 20,6 20,21 5,21"/><line x1="8" y1="9" x2="17" y2="9"/><line x1="8" y1="13" x2="15" y2="13"/></svg>`;
+    // 60fps 連續神經同步示波器狀態
+    let sparkRAF = null;
+    let sparkImpulse = 0;
+    let sparkMood = 'normal';
+    let sparkMoodUntil = 0;
+    let sparkSmoothNoise = 0.75;
+    let sparkTargetNoise = 0.75;
+    let sparkNoiseTimer = 0;
+
+    const SVG_SHARD = `<svg class="svg-icon" style="color:var(--netrunner-cyan); margin-right:6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5,3 17,3 20,6 20,21 5,21"/><line x1="8" y1="9" x2="17" y2="9"/><line x1="8" y1="13" x2="15" y2="13"/></svg>`;
 
     function saveDB() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        } catch (e) {}
     }
 
     function escapeHTML(str) {
@@ -1671,6 +1881,149 @@
             .replace(/'/g, "&#39;");
     }
 
+    /* ========================================================
+       60fps 連續流暢神經訊號示波器 Canvas 引擎
+       ======================================================== */
+    function pulseNeuralSparkline(mood) {
+        const now = performance.now();
+        if (mood === 'correct') {
+            sparkImpulse = Math.min(1.0, 0.8 + Math.min(comboStreak, 5) * 0.04);
+            sparkMood = 'correct';
+            sparkMoodUntil = now + 560;
+        } else if (mood === 'wrong') {
+            sparkImpulse = -0.95;
+            sparkMood = 'wrong';
+            sparkMoodUntil = now + 620;
+        }
+    }
+
+    function startContinuousSparklineCanvas() {
+        const canvas = document.getElementById('telemetry-sparkline');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        if (sparkRAF) {
+            cancelAnimationFrame(sparkRAF);
+            sparkRAF = null;
+        }
+
+        const cssW = 96;
+        const cssH = 24;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(cssW * dpr);
+        canvas.height = Math.round(cssH * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        let lastTime = performance.now();
+        let scrollPhase = 0;
+
+        // 預先建立平滑雜訊查表，確保波形連續流暢滾動
+        const TABLE_SIZE = 256;
+        const noiseTable = new Float32Array(TABLE_SIZE);
+        let seed = 13.37;
+        for (let i = 0; i < TABLE_SIZE; i++) {
+            seed = (seed * 9301 + 49297) % 233280;
+            noiseTable[i] = (seed / 233280) * 2 - 1;
+        }
+
+        const sampleSmoothNoise = (x) => {
+            const xi = Math.floor(x);
+            const xf = x - xi;
+            const u = xf * xf * (3 - 2 * xf);
+            const a = noiseTable[((xi % TABLE_SIZE) + TABLE_SIZE) % TABLE_SIZE];
+            const b = noiseTable[(((xi + 1) % TABLE_SIZE) + TABLE_SIZE) % TABLE_SIZE];
+            return a + (b - a) * u;
+        };
+
+        const renderFrame = (now) => {
+            const dt = Math.min(0.05, (now - lastTime) / 1000);
+            lastTime = now;
+
+            // scrollPhase 速率為 4.025（與左側狀態列更新完全獨立）
+            const speedBoost = 1 + Math.abs(sparkImpulse) * 0.85;
+            scrollPhase += dt * 4.025 * speedBoost;
+
+            // 脈衝阻尼衰減
+            sparkImpulse *= Math.pow(0.06, dt);
+            if (Math.abs(sparkImpulse) < 0.005) sparkImpulse = 0;
+
+            if (now > sparkMoodUntil) {
+                sparkMood = 'normal';
+            }
+
+            // 平滑隨機包絡調變
+            sparkNoiseTimer -= dt;
+            if (sparkNoiseTimer <= 0) {
+                sparkTargetNoise = 0.45 + Math.random() * 0.75;
+                sparkNoiseTimer = ((0.09 + Math.random() * 0.14) * 2) / 0.7;
+            }
+            sparkSmoothNoise += (sparkTargetNoise - sparkSmoothNoise) * Math.min(1, dt * 4.9);
+
+            ctx.clearRect(0, 0, cssW, cssH);
+
+            // 中線微弱基準線
+            const midY = cssH * 0.5;
+            ctx.strokeStyle = 'rgba(38, 45, 61, 0.75)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, midY);
+            ctx.lineTo(cssW, midY);
+            ctx.stroke();
+
+            // 依狀態切換波形顏色
+            let strokeColor = '#00F0FF';
+            let glowColor = 'rgba(0, 240, 255, 0.55)';
+            if (sparkMood === 'correct') {
+                strokeColor = '#FCEE09';
+                glowColor = 'rgba(252, 238, 9, 0.75)';
+            } else if (sparkMood === 'wrong') {
+                strokeColor = '#FF2A54';
+                glowColor = 'rgba(255, 42, 84, 0.75)';
+            }
+
+            // 逐像素採樣繪製連續有機波形
+            const stepPx = 2;
+            ctx.beginPath();
+            for (let x = 0; x <= cssW; x += stepPx) {
+                const t = scrollPhase + x * 0.11;
+                const n1 = sampleSmoothNoise(t * 1.15);
+                const n2 = sampleSmoothNoise(t * 2.45 + 37.2) * 0.5;
+                const n3 = Math.sin(t * 1.9) * 0.25;
+
+                // 兩端邊緣漸弱避免切邊突兀
+                const edgeTaper = Math.sin((x / cssW) * Math.PI);
+                const amp = (4.8 * sparkSmoothNoise + Math.abs(sparkImpulse) * 3.5) * (0.35 + 0.65 * edgeTaper);
+
+                // 右側前端疊加脈衝偏移（答對向上攀升、答錯向下跌落）
+                const rightWeight = Math.pow(x / cssW, 1.4);
+                const impulseOffset = -sparkImpulse * 8.5 * rightWeight;
+
+                const rawY = midY + (n1 + n2 + n3) * 0.6 * amp + impulseOffset;
+                const y = Math.max(2.5, Math.min(cssH - 2.5, rawY));
+
+                if (x === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 1.45;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.shadowColor = glowColor;
+            ctx.shadowBlur = 4;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            sparkRAF = requestAnimationFrame(renderFrame);
+        };
+
+        sparkRAF = requestAnimationFrame(renderFrame);
+    }
+
     function startTelemetryTicker() {
         const el = document.getElementById('telemetry-text');
         if (!el) return;
@@ -1679,7 +2032,55 @@
             const hex = Math.floor(0x1000 + Math.random() * 0xEFFF).toString(16).toUpperCase();
             const st = statuses[Math.floor(Math.random() * statuses.length)];
             el.textContent = `MEM: 0x${hex} // NEURAL_LINK: ${st}`;
-        }, 2200);
+        }, 2350);
+    }
+
+    function startEqualizerLoop() {
+        const eqWrap = document.getElementById('quiz-eq-bars');
+        if (!eqWrap) return;
+        const bars = Array.from(eqWrap.querySelectorAll('.eq-bar-item'));
+        let lastTick = 0;
+
+        const tickEq = (now) => {
+            if (!eqWrap.classList.contains('eq-surge') && now - lastTick > 180) {
+                lastTick = now;
+                bars.forEach((bar, i) => {
+                    const wave = 0.18 + Math.abs(Math.sin(now * 0.004 + i * 0.75)) * 0.32;
+                    bar.style.transform = `scaleY(${wave.toFixed(2)})`;
+                });
+            }
+            eqIdleRAF = requestAnimationFrame(tickEq);
+        };
+        eqIdleRAF = requestAnimationFrame(tickEq);
+    }
+
+    function triggerEqualizerSurge() {
+        const eqWrap = document.getElementById('quiz-eq-bars');
+        if (!eqWrap) return;
+        if (eqSurgeTimer) clearTimeout(eqSurgeTimer);
+        eqWrap.classList.add('eq-surge');
+        eqSurgeTimer = setTimeout(() => {
+            eqWrap.classList.remove('eq-surge');
+        }, 380);
+    }
+
+    /* 為所有實體按鈕注入左右微光角點並掛載物理阻尼水波紋 */
+    function decorateButtonMicroDots(root = document) {
+        root.querySelectorAll('button').forEach((btn) => {
+            if (btn.id === 'audio-toggle-btn' || btn.classList.contains('btn-ghost')) return;
+            if (btn.querySelector('.btn-micro-dot')) return;
+
+            const dotL = document.createElement('span');
+            dotL.className = 'btn-micro-dot dot-left';
+            dotL.setAttribute('aria-hidden', 'true');
+
+            const dotR = document.createElement('span');
+            dotR.className = 'btn-micro-dot dot-right';
+            dotR.setAttribute('aria-hidden', 'true');
+
+            btn.appendChild(dotL);
+            btn.appendChild(dotR);
+        });
     }
 
     function initTactileButtonSystem() {
@@ -1699,8 +2100,8 @@
             ripple.className = 'tactile-ripple';
             ripple.style.width = `${size}px`;
             ripple.style.height = `${size}px`;
-            ripple.style.left = `${e.clientX - rect.left}px`;
-            ripple.style.top = `${e.clientY - rect.top}px`;
+            ripple.style.left = `${(e.clientX ? e.clientX - rect.left : rect.width / 2)}px`;
+            ripple.style.top = `${(e.clientY ? e.clientY - rect.top : rect.height / 2)}px`;
             btn.appendChild(ripple);
             setTimeout(() => ripple.remove(), 460);
         });
@@ -1714,7 +2115,14 @@
                 btn.classList.remove('is-releasing');
                 void btn.offsetWidth;
                 btn.classList.add('is-releasing');
-                setTimeout(() => btn.classList.remove('is-releasing'), 250);
+
+                const sheen = document.createElement('span');
+                sheen.className = 'btn-edge-sheen';
+                btn.appendChild(sheen);
+                setTimeout(() => {
+                    sheen.remove();
+                    btn.classList.remove('is-releasing');
+                }, 290);
             }
         };
 
@@ -1760,70 +2168,177 @@
         }
     }
 
-    function playCyberSound(type) {
-        if (isMuted) return;
+    /* ========================================================
+       Web Audio API 多軌賽博合成音效系統（安全無阻塞）
+       ======================================================== */
+    function ensureAudioResources() {
+        if (isMuted) return null;
         try {
             if (!audioCtx) {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContextClass) return;
+                if (!AudioContextClass) return null;
                 audioCtx = new AudioContextClass();
             }
             if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
+                audioCtx.resume().catch(() => {});
             }
-            const now = audioCtx.currentTime;
+            if (!noiseBuffer && audioCtx.sampleRate) {
+                const length = Math.floor(audioCtx.sampleRate * 0.25);
+                noiseBuffer = audioCtx.createBuffer(1, length, audioCtx.sampleRate);
+                const data = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < length; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+            }
+            return audioCtx;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function playCyberSound(type) {
+        const ctx = ensureAudioResources();
+        if (!ctx) return;
+        try {
+            const now = ctx.currentTime;
 
             if (type === 'click') {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(520, now);
-                osc.frequency.exponentialRampToValueAtTime(240, now + 0.045);
-                gain.gain.setValueAtTime(0.08, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
+                if (noiseBuffer) {
+                    const noise = ctx.createBufferSource();
+                    noise.buffer = noiseBuffer;
+                    const hp = ctx.createBiquadFilter();
+                    hp.type = 'highpass';
+                    hp.frequency.setValueAtTime(1600, now);
+                    const noiseGain = ctx.createGain();
+                    noiseGain.gain.setValueAtTime(0.075, now);
+                    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+                    noise.connect(hp);
+                    hp.connect(noiseGain);
+                    noiseGain.connect(ctx.destination);
+                    noise.start(now);
+                    noise.stop(now + 0.016);
+                }
+
+                const thud = ctx.createOscillator();
+                const thudGain = ctx.createGain();
+                thud.type = 'triangle';
+                thud.frequency.setValueAtTime(220, now);
+                thud.frequency.exponentialRampToValueAtTime(60, now + 0.055);
+                thudGain.gain.setValueAtTime(0.13, now);
+                thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                thud.connect(thudGain);
+                thudGain.connect(ctx.destination);
+                thud.start(now);
+                thud.stop(now + 0.065);
+            } else if (type === 'scramble') {
+                const osc = ctx.createOscillator();
+                const bp = ctx.createBiquadFilter();
+                const freq = 1200 + Math.random() * 1200;
+                bp.type = 'bandpass';
+                bp.frequency.setValueAtTime(freq, now);
+                bp.Q.setValueAtTime(4, now);
+                const gain = ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.025, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
+                osc.connect(bp);
+                bp.connect(gain);
+                gain.connect(ctx.destination);
                 osc.start(now);
-                osc.stop(now + 0.05);
+                osc.stop(now + 0.019);
             } else if (type === 'correct') {
-                const freqs = [880, 1318.5];
-                freqs.forEach((f, idx) => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    const t0 = now + idx * 0.065;
-                    osc.frequency.setValueAtTime(f, t0);
-                    gain.gain.setValueAtTime(0.11, t0);
-                    gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.14);
+                const sub = ctx.createOscillator();
+                const subGain = ctx.createGain();
+                sub.type = 'sine';
+                sub.frequency.setValueAtTime(110, now);
+                sub.frequency.exponentialRampToValueAtTime(45, now + 0.16);
+                subGain.gain.setValueAtTime(0.2, now);
+                subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.17);
+                sub.connect(subGain);
+                subGain.connect(ctx.destination);
+                sub.start(now);
+                sub.stop(now + 0.18);
+
+                const pitchShift = 1 + Math.min(comboStreak, 10) * 0.025;
+                const arpNotes = [523.25, 659.25, 1046.5];
+                const lp = ctx.createBiquadFilter();
+                lp.type = 'lowpass';
+                lp.frequency.setValueAtTime(2800 * pitchShift, now);
+                lp.connect(ctx.destination);
+
+                arpNotes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    const startT = now + idx * 0.048;
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq * pitchShift, startT);
+                    gain.gain.setValueAtTime(0.001, startT);
+                    gain.gain.linearRampToValueAtTime(0.11, startT + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.001, startT + 0.14);
                     osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(t0);
-                    osc.stop(t0 + 0.15);
+                    gain.connect(lp);
+                    osc.start(startT);
+                    osc.stop(startT + 0.15);
                 });
             } else if (type === 'wrong') {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(165, now);
-                osc.frequency.linearRampToValueAtTime(82, now + 0.22);
-                gain.gain.setValueAtTime(0.12, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(now);
-                osc.stop(now + 0.25);
+                const lp = ctx.createBiquadFilter();
+                lp.type = 'lowpass';
+                lp.frequency.setValueAtTime(750, now);
+                lp.frequency.exponentialRampToValueAtTime(180, now + 0.28);
+                lp.connect(ctx.destination);
+
+                [140, 147].forEach((freq) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(freq, now);
+                    osc.frequency.linearRampToValueAtTime(freq * 0.55, now + 0.26);
+                    gain.gain.setValueAtTime(0.09, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+                    osc.connect(gain);
+                    gain.connect(lp);
+                    osc.start(now);
+                    osc.stop(now + 0.29);
+                });
+
+                if (noiseBuffer) {
+                    const noise = ctx.createBufferSource();
+                    noise.buffer = noiseBuffer;
+                    const nGain = ctx.createGain();
+                    nGain.gain.setValueAtTime(0.085, now);
+                    nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+                    noise.connect(nGain);
+                    nGain.connect(ctx.destination);
+                    noise.start(now);
+                    noise.stop(now + 0.075);
+                }
             } else if (type === 'decrypt') {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(400, now);
-                osc.frequency.exponentialRampToValueAtTime(960, now + 0.08);
-                gain.gain.setValueAtTime(0.07, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(now);
-                osc.stop(now + 0.1);
+                const sweep = ctx.createOscillator();
+                const sweepGain = ctx.createGain();
+                sweep.type = 'sawtooth';
+                sweep.frequency.setValueAtTime(300, now);
+                sweep.frequency.exponentialRampToValueAtTime(1400, now + 0.11);
+                sweepGain.gain.setValueAtTime(0.06, now);
+                sweepGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                sweep.connect(sweepGain);
+                sweepGain.connect(ctx.destination);
+                sweep.start(now);
+                sweep.stop(now + 0.125);
+
+                [987.77, 1318.5].forEach((f, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    const t0 = now + 0.07 + idx * 0.045;
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(f, t0);
+                    gain.gain.setValueAtTime(0.08, t0);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.09);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(t0);
+                    osc.stop(t0 + 0.1);
+                });
             }
         } catch (e) {}
     }
@@ -1890,6 +2405,9 @@
     }
 
     function triggerCorrectExplosion(targetBtn) {
+        triggerEqualizerSurge();
+        pulseNeuralSparkline('correct');
+
         const wrap = targetBtn ? targetBtn.parentElement : null;
         if (wrap) {
             const shockwave = document.createElement('div');
@@ -1929,6 +2447,7 @@
     function triggerWrongFeedback() {
         comboStreak = 0;
         updateComboHUD();
+        pulseNeuralSparkline('wrong');
         playCyberSound('wrong');
         const container = document.getElementById('main-hud-container');
         const wordBox = document.getElementById('quiz-word-box');
@@ -1948,10 +2467,11 @@
             cancelAnimationFrame(countdownRAF);
             countdownRAF = null;
         }
-        if (scrambleTimer) {
-            clearInterval(scrambleTimer);
-            scrambleTimer = null;
+        if (scrambleRAF) {
+            cancelAnimationFrame(scrambleRAF);
+            scrambleRAF = null;
         }
+        currentScrambleId++;
     }
 
     function resetEndQuizButton() {
@@ -1988,11 +2508,11 @@
     }
 
     function applyDefaultQuizConfigForMode(mode) {
-        // 兩個模式預設皆關閉計時（留空，手動輸入秒數才計時）
+        // 兩個模式預設皆關閉計時（輸入框留空，手動輸入大於 0 秒數才啟用）
         const timeInput = document.getElementById('quiz-time-input');
-        timeInput.value = lastUsedTime && parseInt(lastUsedTime, 10) > 0 ? lastUsedTime : "";
+        timeInput.value = "";
 
-        // 選擇題預設開啟遮蓋，除非使用者手動取消勾選
+        // 選擇題預設開啟遮蓋，除非手動取消勾選
         if (mode === 'choice') {
             document.getElementById('mask-toggle').checked = true;
             isMaskActive = true;
@@ -2021,6 +2541,7 @@
             applyDefaultQuizConfigForMode(currentGameMode);
         }
         if (pageId !== 'p-edit') cancelSelection();
+        decorateButtonMicroDots(targetPage || document);
     }
 
     function formatItemToString(item) {
@@ -2136,7 +2657,7 @@
             row.className = 'item';
 
             const titleSpan = document.createElement('span');
-            titleSpan.style.cssText = 'color:var(--netrunner-cyan); font-weight:800; cursor:pointer; flex:1; display:flex; align-items:center; min-width:0;';
+            titleSpan.style.cssText = 'color:var(--netrunner-cyan); font-weight:700; cursor:pointer; flex:1; display:flex; align-items:center; min-width:0;';
             titleSpan.innerHTML = `${SVG_SHARD} <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(n)} (${db[n].length})</span>`;
             titleSpan.addEventListener('click', () => {
                 playCyberSound('click');
@@ -2196,6 +2717,7 @@
 
                 renameWrap.append(renameInput, okBtn, cancelBtn);
                 row.appendChild(renameWrap);
+                decorateButtonMicroDots(row);
                 renameInput.focus();
                 renameInput.select();
             });
@@ -2230,6 +2752,7 @@
             row.append(titleSpan, renameBtn, delBtn);
             listEl.appendChild(row);
         });
+        decorateButtonMicroDots(listEl);
     }
 
     function openEdit(n) {
@@ -2247,6 +2770,7 @@
         const saveBtn = document.getElementById('save-btn');
         saveBtn.textContent = "加入單字";
         saveBtn.className = "btn-primary";
+        decorateButtonMicroDots(saveBtn.parentElement);
         toggleBatch(false);
     }
 
@@ -2309,6 +2833,7 @@
                     const saveBtn = document.getElementById('save-btn');
                     saveBtn.textContent = "更新單字";
                     saveBtn.className = "btn-warning";
+                    decorateButtonMicroDots(saveBtn.parentElement);
                     document.getElementById('w-in').focus();
                 }
             });
@@ -2334,6 +2859,7 @@
             row.append(cb, wordBox, statGroup, delBtn);
             container.appendChild(row);
         });
+        decorateButtonMicroDots(container);
     }
 
     function startSelectionMode() {
@@ -2509,6 +3035,7 @@
             });
             selListEl.appendChild(btn);
         });
+        decorateButtonMicroDots(selListEl);
     }
 
     function startQuiz() {
@@ -2520,11 +3047,6 @@
 
         const rawLimit = parseInt(document.getElementById('quiz-num-input').value, 10);
         const limit = Math.min(Math.max(1, rawLimit || pool.length), pool.length);
-
-        const timeRaw = document.getElementById('quiz-time-input').value.trim();
-        const parsedTime = parseInt(timeRaw, 10);
-        lastUsedTime = (!isNaN(parsedTime) && parsedTime > 0) ? String(parsedTime) : "";
-        localStorage.setItem(TIME_PREF_KEY, lastUsedTime);
 
         quizQueue = [...pool].sort(() => 0.5 - Math.random()).slice(0, limit);
         currentIdx = 0;
@@ -2566,11 +3088,13 @@
         return { fontSize: `${currentSize}px`, needWrap };
     }
 
+    /* requestAnimationFrame + scrambleId 防競態高速亂碼解密動畫 */
     function cipherScrambleReveal(targetText) {
-        if (scrambleTimer) {
-            clearInterval(scrambleTimer);
-            scrambleTimer = null;
+        if (scrambleRAF) {
+            cancelAnimationFrame(scrambleRAF);
+            scrambleRAF = null;
         }
+        const runId = ++currentScrambleId;
         const displayEl = document.getElementById('q-word-display');
         const { fontSize, needWrap } = computeFitFontSize(targetText);
         displayEl.style.fontSize = fontSize;
@@ -2580,13 +3104,19 @@
         const cipherPool = '#X9@K_7$0F%A2&Z8*Q4!';
         const len = targetText.length;
         const duration = 280;
-        const intervalMs = 24;
         const startTime = performance.now();
+        let lastSoundTime = 0;
 
-        scrambleTimer = setInterval(() => {
-            const elapsed = performance.now() - startTime;
+        const stepScramble = (now) => {
+            if (runId !== currentScrambleId) return;
+            const elapsed = now - startTime;
             const progress = Math.min(1, elapsed / duration);
             const lockedCount = Math.floor(progress * len);
+
+            if (now - lastSoundTime >= 45 && progress < 1) {
+                lastSoundTime = now;
+                playCyberSound('scramble');
+            }
 
             let out = '';
             for (let i = 0; i < len; i++) {
@@ -2601,12 +3131,15 @@
             }
             displayEl.textContent = out;
 
-            if (progress >= 1) {
-                clearInterval(scrambleTimer);
-                scrambleTimer = null;
+            if (progress < 1) {
+                scrambleRAF = requestAnimationFrame(stepScramble);
+            } else {
+                scrambleRAF = null;
                 displayEl.textContent = targetText;
             }
-        }, intervalMs);
+        };
+
+        scrambleRAF = requestAnimationFrame(stepScramble);
     }
 
     function updateDualProgressBar(pct) {
@@ -2742,6 +3275,8 @@
             optsContainer.appendChild(wrap);
         });
 
+        decorateButtonMicroDots(optsContainer);
+
         const maskEl = document.getElementById('q-options-mask');
         maskEl.classList.remove('decrypting');
         if (isMaskActive) {
@@ -2792,7 +3327,7 @@
         }
     }
 
-    /* 填充題首尾提示：僅顯示在題目框下方，中間斜線固定 5 個字元 */
+    /* 填充題首尾提示：僅顯示在題目框下方，中間固定 5 個底線 (_____) */
     function setupInputUI(q) {
         document.getElementById('wrong-confirm-box').style.display = 'none';
         document.getElementById('input-zone').style.display = 'block';
@@ -2806,9 +3341,9 @@
         if (useHint) {
             const w = q.w.trim();
             if (w.length > 1) {
-                hintEl.textContent = `${w[0]}///// ${w[w.length - 1]}`;
+                hintEl.textContent = `${w[0]}_____ ${w[w.length - 1]}`;
             } else {
-                hintEl.textContent = `${w}/////`;
+                hintEl.textContent = `${w}_____`;
             }
             hintEl.style.display = 'block';
         } else {
@@ -2867,7 +3402,7 @@
             document.getElementById('choice-next-box').style.display = 'block';
         } else {
             document.getElementById('input-zone').style.display = 'none';
-            document.getElementById('wrong-msg').innerHTML = `正確答案是：<br><b style="font-size:24px; color:var(--arasaka-red);">${escapeHTML(q.w)}</b>`;
+            document.getElementById('wrong-msg').innerHTML = `正確答案是：<br><b style="font-size:24px; color:var(--crimson-red);">${escapeHTML(q.w)}</b>`;
             document.getElementById('wrong-confirm-box').style.display = 'block';
         }
     }
@@ -2958,6 +3493,9 @@
 
     function initEventBindings() {
         startTelemetryTicker();
+        startContinuousSparklineCanvas();
+        startEqualizerLoop();
+        decorateButtonMicroDots(document);
         initTactileButtonSystem();
 
         document.getElementById('audio-toggle-btn').addEventListener('click', toggleMute);
